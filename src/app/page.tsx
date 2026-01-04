@@ -210,6 +210,17 @@ export default function Home() {
     setIsSubmitting(true);
     setSubmitMessage('');
 
+    // Client-side email validation
+    const emailLower = contactForm.email.toLowerCase();
+    const allowedDomains = ['@gmail.com', '@outlook.com', '@hotmail.com', '@live.com'];
+    const isValidDomain = allowedDomains.some(domain => emailLower.endsWith(domain));
+
+    if (!isValidDomain) {
+      setSubmitMessage('Please use a Gmail or Outlook email address (e.g., yourname@gmail.com or yourname@outlook.com)');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Send email via API
       const response = await fetch('/api/contact', {
@@ -218,13 +229,13 @@ export default function Home() {
         body: JSON.stringify(contactForm),
       });
 
-      await response.json();
+      const data = await response.json();
 
       if (response.ok) {
         setSubmitMessage('Thank you! Your message has been sent to Rohit. He will get back to you soon!');
         setContactForm({ name: '', email: '', phone: '' });
       } else {
-        setSubmitMessage('Failed to send message. Please email directly at rkkarumanchi98@gmail.com');
+        setSubmitMessage(data.error || 'Failed to send message. Please email directly at rkkarumanchi98@gmail.com');
       }
     } catch (error) {
       console.error('Form submission error:', error);
@@ -665,8 +676,9 @@ export default function Home() {
                     value={contactForm.email}
                     onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
                     className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-slate-500 outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all"
-                    placeholder="john@example.com"
+                    placeholder="yourname@gmail.com"
                   />
+                  <p className="mt-1 text-xs text-slate-400">Only Gmail or Outlook addresses accepted</p>
                 </div>
 
                 <div>

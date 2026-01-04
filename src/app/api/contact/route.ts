@@ -15,6 +15,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate email domain - only allow Gmail and Outlook
+    const emailLower = email.toLowerCase();
+    const allowedDomains = ['@gmail.com', '@outlook.com', '@hotmail.com', '@live.com'];
+    const isValidDomain = allowedDomains.some(domain => emailLower.endsWith(domain));
+
+    if (!isValidDomain) {
+      return NextResponse.json(
+        { error: 'Please use a Gmail or Outlook email address' },
+        { status: 400 }
+      );
+    }
+
     // Send email to yourself
     const { data, error } = await resend.emails.send({
       from: 'Portfolio Contact <onboarding@resend.dev>', // Resend's test email
