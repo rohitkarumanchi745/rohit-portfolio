@@ -50,14 +50,30 @@ const projects = [
     link: "#",
     linkText: "Details",
   },
+  {
+    title: "Interactive 3D Portfolio with AI Chatbot (This Site!)",
+    subtitle: "Next.js + Three.js + OpenAI + AWS EC2 - Production-grade personal portfolio",
+    points: [
+      "Built full-stack interactive portfolio with Next.js 16, Three.js for 3D graphics, React Three Fiber, and server-side rendering with zero hydration errors.",
+      "Implemented animated 3D scene featuring custom-built building model with lighting, shadows, floating particles, animated builder character with hammer physics, and interactive camera controls.",
+      "Integrated OpenAI-powered AI chatbot (Spuff) using GPT API for real-time Q&A about experience, projects, and skills with streaming responses.",
+      "Deployed on AWS EC2 with Nginx reverse proxy, SSL/TLS certificates via Let's Encrypt, CloudFront CDN for global delivery, and Route 53 DNS management.",
+      "Implemented responsive design with Tailwind CSS, smooth scroll navigation, contact form with validation, and glass-morphism UI effects.",
+      "Set up CI/CD pipeline with GitHub Actions for automated deployments, PM2 process management for zero-downtime updates, and CloudWatch monitoring.",
+    ],
+    stack: ["Next.js", "React", "TypeScript", "Three.js", "React Three Fiber", "OpenAI API", "Tailwind CSS", "AWS EC2", "Nginx", "CloudFront", "Route 53", "Let's Encrypt", "PM2", "GitHub Actions"],
+    link: "https://rohitkarumanchi.com",
+    linkText: "Live Site",
+  },
 ];
 
 const skills = [
   { group: "Data Engineering", items: ["Kafka", "Spark", "PySpark", "Scala", "Databricks", "Airflow", "Snowflake", "dbt", "Data Fusion", "Ray/Anyscale", "SQS", "Kinesis", "Big Data"] },
   { group: "Full Stack", items: ["Python", "Java", "Rust", "React", "TypeScript", "FastAPI", "GraphQL", "React Native/Expo", "REST", "JWT/Auth", "gRPC", "Next.js", "Microfrontend Architecture"] },
   { group: "Systems & Infrastructure", items: ["MCP Server", "Postgres", "Redis", "Docker", "Kubernetes", "Microservices"] },
-  { group: "Cloud/DevOps", items: ["Azure", "AWS", "Git", "GitHub", "CI/CD", "Prometheus/Grafana", "Streamlit"] },
+  { group: "Cloud/DevOps", items: ["AWS EC2", "AWS Amplify", "CloudFront", "Route 53", "Azure", "Nginx", "Let's Encrypt", "PM2", "Git", "GitHub Actions", "CI/CD", "Prometheus/Grafana"] },
   { group: "ML/Computer Vision", items: ["PyTorch", "CNN", "OpenCV", "Federated Learning", "RL", "On-Device ML", "Vector DBs", "RecSys", "Model Deployment"] },
+  { group: "3D Graphics & UI", items: ["Three.js", "React Three Fiber", "WebGL", "Tailwind CSS", "Responsive Design", "Glass-morphism", "Animations"] },
   { group: "Analytics & BI", items: ["Power BI", "Tableau", "Streamlit", "Data Visualization"] },
 ];
 
