@@ -210,12 +210,28 @@ export default function Home() {
     setIsSubmitting(true);
     setSubmitMessage('');
 
-    // Simulate form submission
-    setTimeout(() => {
-      setSubmitMessage('Thank you! Your message has been received. Rohit will get back to you soon!');
-      setContactForm({ name: '', email: '', phone: '' });
+    try {
+      // Send email via API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactForm),
+      });
+
+      await response.json();
+
+      if (response.ok) {
+        setSubmitMessage('Thank you! Your message has been sent to Rohit. He will get back to you soon!');
+        setContactForm({ name: '', email: '', phone: '' });
+      } else {
+        setSubmitMessage('Failed to send message. Please email directly at rkkarumanchi98@gmail.com');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitMessage('Failed to send message. Please email directly at rkkarumanchi98@gmail.com');
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
