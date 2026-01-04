@@ -237,56 +237,78 @@ export default function Home() {
 
         {/* Floating particles - brighter and more visible */}
         <div className="absolute inset-0">
-          {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-purple-400/60 shadow-lg shadow-purple-400/50"
-              style={{
-                width: `${2 + Math.random() * 4}px`,
-                height: `${2 + Math.random() * 4}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animation: `float ${15 + Math.random() * 10}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 5}s`,
-              }}
-            />
-          ))}
+          {[...Array(30)].map((_, i) => {
+            const size = 2 + (i % 4);
+            const left = (i * 13.7) % 100;
+            const top = (i * 17.3) % 100;
+            const duration = 15 + (i % 10);
+            const delay = (i % 5);
+            return (
+              <div
+                key={i}
+                className="absolute rounded-full bg-purple-400/60 shadow-lg shadow-purple-400/50"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  animation: `float ${duration}s ease-in-out infinite`,
+                  animationDelay: `${delay}s`,
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Light rays - much brighter and longer */}
         <div className="absolute inset-0">
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute h-0.5 bg-gradient-to-r from-transparent via-purple-400/40 to-transparent shadow-lg shadow-purple-400/30"
-              style={{
-                width: `${150 + Math.random() * 100}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                transform: `rotate(${Math.random() * 360}deg)`,
-                animation: `shimmer ${3 + Math.random() * 2}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
-              }}
-            />
-          ))}
+          {[...Array(8)].map((_, i) => {
+            const width = 150 + (i * 12.5);
+            const left = (i * 12.5) % 100;
+            const top = (i * 11.7) % 100;
+            const rotation = (i * 45) % 360;
+            const duration = 3 + (i % 2);
+            const delay = (i % 3);
+            return (
+              <div
+                key={i}
+                className="absolute h-0.5 bg-gradient-to-r from-transparent via-purple-400/40 to-transparent shadow-lg shadow-purple-400/30"
+                style={{
+                  width: `${width}px`,
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  transform: `rotate(${rotation}deg)`,
+                  animation: `shimmer ${duration}s ease-in-out infinite`,
+                  animationDelay: `${delay}s`,
+                }}
+              />
+            );
+          })}
         </div>
 
         {/* Additional glow spots */}
         <div className="absolute inset-0">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute rounded-full bg-purple-500/10 blur-3xl"
-              style={{
-                width: `${200 + Math.random() * 200}px`,
-                height: `${200 + Math.random() * 200}px`,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animation: `pulse ${5 + Math.random() * 5}s ease-in-out infinite`,
-                animationDelay: `${Math.random() * 3}s`,
-              }}
-            />
-          ))}
+          {[...Array(6)].map((_, i) => {
+            const size = 200 + (i * 33);
+            const left = (i * 16.7) % 100;
+            const top = (i * 14.3) % 100;
+            const duration = 5 + (i % 5);
+            const delay = (i % 3);
+            return (
+              <div
+                key={i}
+                className="absolute rounded-full bg-purple-500/10 blur-3xl"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  animation: `pulse ${duration}s ease-in-out infinite`,
+                  animationDelay: `${delay}s`,
+                }}
+              />
+            );
+          })}
         </div>
       </div>
 
