@@ -7,11 +7,11 @@ import * as THREE from 'three';
 
 // Natural Beast with organic animations
 const NaturalBeast = () => {
-  const bodyRef = useRef<any>();
-  const headRef = useRef<any>();
-  const tailRef = useRef<any>();
-  const leftEarRef = useRef<any>();
-  const rightEarRef = useRef<any>();
+  const bodyRef = useRef<any>(null);
+  const headRef = useRef<any>(null);
+  const tailRef = useRef<any>(null);
+  const leftEarRef = useRef<any>(null);
+  const rightEarRef = useRef<any>(null);
 
   // Procedural Animation Logic
   useFrame((state) => {

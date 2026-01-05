@@ -26,15 +26,6 @@ const nextConfig: NextConfig = {
     optimizeCss: true,
   },
 
-  // Disable Next.js development indicator
-  devIndicators: {
-    buildActivity: false,
-    buildActivityPosition: 'bottom-right',
-  },
-
-  // Enable SWC minification for faster builds
-  swcMinify: true,
-
   // Reduce bundle size
   poweredByHeader: false,
 };

@@ -1,20 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from 'next/dynamic';
-
-// Dynamically import 3D scene to avoid SSR issues - load after initial page render
-const Scene3D = dynamic(() => import('./components/Scene3D'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl">
-      <div className="text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
-        <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Loading 3D scene...</p>
-      </div>
-    </div>
-  )
-});
 
 const projects = [
   {
@@ -165,11 +151,18 @@ function MobileMenu() {
 
 function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hi! I'm Spuff, Rohit's AI assistant. Ask me anything about his experience, projects, or skills!" }
-  ]);
+  const [messages, setMessages] = useState<Array<{role: string; content: string}>>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Only initialize messages when chat is first opened
+  useEffect(() => {
+    if (isOpen && !isInitialized) {
+      setMessages([{ role: "assistant", content: "Hi! I'm Spuff, Rohit's AI assistant. Ask me anything about his experience, projects, or skills!" }]);
+      setIsInitialized(true);
+    }
+  }, [isOpen, isInitialized]);
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -608,14 +601,14 @@ export default function Home() {
           <div className="absolute top-40 left-1/2 h-80 w-80 rounded-full bg-violet-600 opacity-15 blur-3xl" />
 
           <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-            {/* Right: 3D Scene - Show first on mobile */}
-            <div className="relative h-[280px] sm:h-[350px] lg:h-[600px] order-first lg:order-last">
-              <Scene3D />
-              <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 text-center z-10">
-                <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-slate-300/50 dark:border-white/5">
-                  <span className="hidden sm:inline">🖱️ Drag to explore • Auto-rotating</span>
-                  <span className="sm:hidden">👆 Touch to explore</span>
-                </p>
+            {/* Right: Animated Gradient Visual - Lightweight replacement for 3D */}
+            <div className="relative h-[280px] sm:h-[350px] lg:h-[600px] order-first lg:order-last rounded-3xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 opacity-20 dark:opacity-30 animate-pulse" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 opacity-30 dark:opacity-40" style={{ animation: 'float 8s ease-in-out infinite' }} />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-6xl sm:text-8xl lg:text-9xl opacity-20 dark:opacity-30" style={{ animation: 'float 6s ease-in-out infinite' }}>
+                  💻
+                </div>
               </div>
             </div>
 
