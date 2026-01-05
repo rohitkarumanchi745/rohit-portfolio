@@ -490,10 +490,10 @@ export default function Home() {
             const duration = 25 + (i % 10);
             const delay = (i % 7);
             const finalMobileSize = item.mobileSize || Math.round(item.size * 0.5); // Use custom mobile size or 50%
-            // Higher opacity for brand logos (images), with lighter option for Claude
+            // Higher opacity for brand logos (images), with lighter option for Claude (especially on mobile)
             const opacityClass = item.isImage
               ? (item.lighterOpacity
-                  ? 'opacity-20 dark:opacity-25 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-70 dark:hover:opacity-75'
+                  ? 'opacity-15 dark:opacity-18 md:opacity-25 md:dark:opacity-30 hover:opacity-50 md:hover:opacity-60 dark:hover:opacity-65'
                   : 'opacity-40 dark:opacity-50 md:opacity-55 md:dark:opacity-65 hover:opacity-80 md:hover:opacity-90 dark:hover:opacity-95')
               : 'opacity-15 dark:opacity-20 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-80 dark:hover:opacity-90';
             // Stronger glow for brand logos
