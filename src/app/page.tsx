@@ -467,7 +467,7 @@ export default function Home() {
             // AI Providers - Key logos (ALL visible on mobile!)
             { icon: '/Microsoft_AI_logo.png', size: 80, left: 18, top: 45, hideOnMobile: false, isImage: true, mobileSize: 50 },   // Microsoft AI - LARGEST
             { icon: '/aws.png', size: 62, left: 25, top: 38, hideOnMobile: false, isImage: true, mobileSize: 40 },   // AWS
-            { icon: '/claude.png', size: 60, left: 12, top: 82, hideOnMobile: false, isImage: true, mobileSize: 38 },   // Claude AI
+            { icon: '/claude.png', size: 60, left: 12, top: 82, hideOnMobile: false, isImage: true, mobileSize: 38, lighterOpacity: true },   // Claude AI
             { icon: '/open%20ai.png', size: 55, left: 78, top: 55, hideOnMobile: false, isImage: true, mobileSize: 35 },   // OpenAI
             { icon: '/share-ais-03.png', size: 58, left: 50, top: 25, hideOnMobile: false, isImage: true, mobileSize: 36 },   // AI Logos
             { icon: '/meta%20llama.png', size: 52, left: 88, top: 8, hideOnMobile: false, isImage: true, mobileSize: 34 },   // Meta
@@ -490,9 +490,11 @@ export default function Home() {
             const duration = 25 + (i % 10);
             const delay = (i % 7);
             const finalMobileSize = item.mobileSize || Math.round(item.size * 0.5); // Use custom mobile size or 50%
-            // Higher opacity for brand logos (images)
+            // Higher opacity for brand logos (images), with lighter option for Claude
             const opacityClass = item.isImage
-              ? 'opacity-40 dark:opacity-50 md:opacity-55 md:dark:opacity-65 hover:opacity-80 md:hover:opacity-90 dark:hover:opacity-95'
+              ? (item.lighterOpacity
+                  ? 'opacity-20 dark:opacity-25 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-70 dark:hover:opacity-75'
+                  : 'opacity-40 dark:opacity-50 md:opacity-55 md:dark:opacity-65 hover:opacity-80 md:hover:opacity-90 dark:hover:opacity-95')
               : 'opacity-15 dark:opacity-20 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-80 dark:hover:opacity-90';
             // Stronger glow for brand logos
             const filterEffect = item.isImage
