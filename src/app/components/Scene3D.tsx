@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Float, Sphere } from '@react-three/drei';
-import { Suspense, useRef } from 'react';
+import { Suspense, useRef, useState, useEffect } from 'react';
 
 // Animated Builder component
 function AnimatedBuilder() {
@@ -12,15 +12,15 @@ function AnimatedBuilder() {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
 
-    // Hammer swinging animation - up and down motion
+    // Hammer swinging animation - more visible up and down motion
     if (rightArmRef.current) {
-      rightArmRef.current.rotation.z = 0.5 + Math.sin(time * 2) * 0.4;
-      rightArmRef.current.rotation.x = Math.sin(time * 2) * 0.2;
+      rightArmRef.current.rotation.z = 0.5 + Math.sin(time * 3) * 0.6;
+      rightArmRef.current.rotation.x = Math.sin(time * 3) * 0.3;
     }
 
-    // Subtle body bobbing motion
+    // More visible body bobbing motion
     if (bodyRef.current) {
-      bodyRef.current.position.y = -0.35 + Math.sin(time * 2) * 0.02;
+      bodyRef.current.position.y = -0.35 + Math.sin(time * 3) * 0.05;
     }
   });
 
@@ -97,15 +97,23 @@ function AnimatedBuilder() {
   );
 }
 
-// Enhanced Building component
-function Building() {
+// Enhanced Building component with theme support
+function Building({ isDark }: { isDark: boolean }) {
+  // Theme-aware building colors
+  const terrainColor = isDark ? "#1a3a2a" : "#4a7c59";
+  const grassColor = isDark ? "#2d5a3d" : "#5a9367";
+  const wallColor = isDark ? "#3a4556" : "#8b9dc3";
+  const secondFloorColor = isDark ? "#4a5568" : "#a0aec0";
+  const roofColor = isDark ? "#2d3748" : "#4a5568";
+  const chimneyColor = isDark ? "#1a202c" : "#2d3748";
+
   return (
     <group position={[0, -1, 0]}>
       {/* Layered terrain platform with elevation */}
       <mesh position={[0, -0.6, 0]} receiveShadow>
         <cylinderGeometry args={[3.5, 3.5, 0.3, 64]} />
         <meshStandardMaterial
-          color="#1a3a2a"
+          color={terrainColor}
           roughness={0.9}
           metalness={0.1}
         />
@@ -115,10 +123,10 @@ function Building() {
       <mesh position={[0, -0.42, 0]} receiveShadow>
         <cylinderGeometry args={[3.3, 3.3, 0.05, 64]} />
         <meshStandardMaterial
-          color="#2d5a3d"
+          color={grassColor}
           roughness={1}
-          emissive="#1a3020"
-          emissiveIntensity={0.1}
+          emissive={isDark ? "#1a3020" : "#2d5a3d"}
+          emissiveIntensity={isDark ? 0.1 : 0.05}
         />
       </mesh>
 
@@ -126,11 +134,11 @@ function Building() {
       <mesh position={[0, 0.3, 0]} castShadow receiveShadow>
         <boxGeometry args={[2.2, 1.2, 1.8]} />
         <meshStandardMaterial
-          color="#3a4556"
+          color={wallColor}
           metalness={0.4}
           roughness={0.6}
-          emissive="#1a1f2e"
-          emissiveIntensity={0.1}
+          emissive={isDark ? "#1a1f2e" : "#6b7c9a"}
+          emissiveIntensity={isDark ? 0.1 : 0.05}
         />
       </mesh>
 
@@ -138,7 +146,7 @@ function Building() {
       <mesh position={[0, 1.1, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.8, 0.6, 1.5]} />
         <meshStandardMaterial
-          color="#4a5568"
+          color={secondFloorColor}
           metalness={0.3}
           roughness={0.7}
         />
@@ -148,18 +156,18 @@ function Building() {
       <mesh position={[0, 1.6, 0]} castShadow>
         <coneGeometry args={[1.4, 0.8, 4]} />
         <meshStandardMaterial
-          color="#2d3748"
+          color={roofColor}
           metalness={0.5}
           roughness={0.6}
-          emissive="#1a1f2e"
-          emissiveIntensity={0.2}
+          emissive={isDark ? "#1a1f2e" : "#2d3748"}
+          emissiveIntensity={isDark ? 0.2 : 0.1}
         />
       </mesh>
 
       {/* Chimney */}
       <mesh position={[0.6, 1.8, 0.4]} castShadow>
         <boxGeometry args={[0.2, 0.5, 0.2]} />
-        <meshStandardMaterial color="#1a202c" roughness={0.8} />
+        <meshStandardMaterial color={chimneyColor} roughness={0.8} />
       </mesh>
 
       {/* Front windows with frames - bottom floor */}
@@ -351,38 +359,86 @@ function Building() {
   );
 }
 
-// Animated background sphere
+// Animated background sphere - removed to let page background show through
 function BackgroundSphere() {
-  return (
-    <Sphere args={[15, 64, 64]} scale={[-1, 1, 1]}>
-      <meshStandardMaterial
-        color="#0a0e1a"
-        roughness={1}
-        metalness={0}
-        side={2}
-      />
-    </Sphere>
-  );
+  return null;
 }
 
 // Main 3D Scene
 export default function Scene3D() {
+  const [isDark, setIsDark] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    // Defer 3D scene rendering slightly to prioritize initial page load
+    const timer = setTimeout(() => setIsReady(true), 100);
+
+    // Check if dark mode is preferred
+    const checkDarkMode = () => {
+      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      setIsDark(darkModeQuery.matches);
+    };
+
+    // Check if mobile device
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Initial checks
+    checkDarkMode();
+    checkMobile();
+
+    // Listen for changes
+    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const listener = (e: MediaQueryListEvent) => setIsDark(e.matches);
+    darkModeQuery.addEventListener('change', listener);
+
+    // Listen for window resize
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      clearTimeout(timer);
+      darkModeQuery.removeEventListener('change', listener);
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
+
+  // Theme-aware colors
+  const fogColor = isDark ? '#0f172a' : '#f8fafc';
+  const ambientColor = isDark ? '#b8c5d6' : '#e0e7ff';
+  const sunColor = isDark ? '#e6f0ff' : '#fef3c7';
+  const groundColor = isDark ? '#2d3748' : '#cbd5e1';
+
+  if (!isReady) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full w-full">
       <Canvas
         camera={{ position: [0, 2, 8], fov: 50 }}
-        shadows
-        gl={{ antialias: true, alpha: true }}
+        shadows={!isMobile}
+        dpr={isMobile ? [1, 1] : [1, 2]}
+        gl={{ antialias: !isMobile, alpha: true, powerPreference: 'high-performance' }}
         className="cursor-grab active:cursor-grabbing"
+        frameloop="always"
+        performance={{ min: 0.5 }}
       >
         <Suspense fallback={null}>
-          {/* Enhanced Lighting Setup */}
-          <ambientLight intensity={0.3} color="#b8c5d6" />
+          {/* Enhanced Lighting Setup - adapts to theme */}
+          <ambientLight intensity={isDark ? 0.3 : 0.5} color={ambientColor} />
 
           {/* Main directional light (sun/moon) */}
           <directionalLight
             position={[8, 10, 5]}
-            intensity={1.5}
+            intensity={isDark ? 1.5 : 2.0}
             castShadow
             shadow-mapSize-width={2048}
             shadow-mapSize-height={2048}
@@ -391,53 +447,55 @@ export default function Scene3D() {
             shadow-camera-right={10}
             shadow-camera-top={10}
             shadow-camera-bottom={-10}
-            color="#e6f0ff"
+            color={sunColor}
           />
 
           {/* Rim light for depth */}
           <directionalLight
             position={[-5, 3, -5]}
-            intensity={0.4}
+            intensity={isDark ? 0.4 : 0.6}
             color="#4f46e5"
           />
 
           {/* Colored accent lights */}
-          <pointLight position={[-4, 4, -4]} intensity={1.2} color="#8b5cf6" distance={15} decay={2} />
-          <pointLight position={[4, 3, 4]} intensity={0.8} color="#3b82f6" distance={12} decay={2} />
-          <pointLight position={[0, 5, -6]} intensity={0.6} color="#06b6d4" distance={10} decay={2} />
+          <pointLight position={[-4, 4, -4]} intensity={isDark ? 1.2 : 0.8} color="#8b5cf6" distance={15} decay={2} />
+          <pointLight position={[4, 3, 4]} intensity={isDark ? 0.8 : 0.6} color="#3b82f6" distance={12} decay={2} />
+          <pointLight position={[0, 5, -6]} intensity={isDark ? 0.6 : 0.4} color="#06b6d4" distance={10} decay={2} />
 
           {/* Ground fill light */}
-          <pointLight position={[0, -2, 0]} intensity={0.3} color="#2d3748" distance={8} decay={2} />
+          <pointLight position={[0, -2, 0]} intensity={isDark ? 0.3 : 0.5} color={groundColor} distance={8} decay={2} />
 
           {/* Spotlight on building */}
           <spotLight
             position={[0, 8, 3]}
             angle={0.4}
             penumbra={0.5}
-            intensity={0.8}
+            intensity={isDark ? 0.8 : 1.0}
             castShadow
             color="#ffe4b5"
           />
 
-          {/* Stars with more density */}
-          <Stars
-            radius={60}
-            depth={60}
-            count={5000}
-            factor={5}
-            saturation={0}
-            fade
-            speed={1.5}
-          />
+          {/* Stars with more density - only visible in dark mode, reduced on mobile */}
+          {isDark && (
+            <Stars
+              radius={60}
+              depth={60}
+              count={isMobile ? 2000 : 5000}
+              factor={5}
+              saturation={0}
+              fade
+              speed={1.5}
+            />
+          )}
 
           {/* Background sphere */}
           <BackgroundSphere />
 
           {/* Main building */}
-          <Building />
+          <Building isDark={isDark} />
 
-          {/* Fog for depth */}
-          <fog attach="fog" args={['#0a0e1a', 10, 25]} />
+          {/* Fog for depth - adapts to theme */}
+          <fog attach="fog" args={[fogColor, 10, 25]} />
 
           {/* Camera controls */}
           <OrbitControls
@@ -446,9 +504,10 @@ export default function Scene3D() {
             minPolarAngle={Math.PI / 4}
             maxPolarAngle={Math.PI / 2}
             autoRotate
-            autoRotateSpeed={0.8}
+            autoRotateSpeed={isMobile ? 0.5 : 0.8}
             dampingFactor={0.05}
             enableDamping
+            touches={{ ONE: 0, TWO: 0 }}
           />
         </Suspense>
       </Canvas>
