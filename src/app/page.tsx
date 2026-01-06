@@ -460,16 +460,10 @@ export default function Home() {
         {/* Floating Tech Icons - Optimized for Mobile & Desktop Performance */}
         <div className="absolute inset-0 will-change-transform">
           {[
-            // Mobile: Essential icons + brand logos (10 total) | Desktop: All icons (22 total)
+            // Mobile: Essential icons (4 total) | Desktop: All icons (17 total)
             // Languages - Mobile visible
             { icon: '🐍', size: 28, left: 8, top: 12, hideOnMobile: false, mobileSize: 18 },     // Python
             { icon: '☕', size: 26, left: 78, top: 22, hideOnMobile: false, mobileSize: 16 },    // Java
-            // AI Providers - Key logos (ALL visible on mobile!)
-            { icon: '/Microsoft_AI_logo.png', size: 80, left: 18, top: 45, hideOnMobile: false, isImage: true, mobileSize: 50 },   // Microsoft AI - LARGEST
-            { icon: '/aws.png', size: 62, left: 25, top: 38, hideOnMobile: false, isImage: true, mobileSize: 40 },   // AWS
-            { icon: '/open%20ai.png', size: 55, left: 78, top: 55, hideOnMobile: false, isImage: true, mobileSize: 35 },   // OpenAI
-            { icon: '/share-ais-03.png', size: 58, left: 50, top: 25, hideOnMobile: false, isImage: true, mobileSize: 36 },   // AI Logos
-            { icon: '/meta%20llama.png', size: 52, left: 88, top: 8, hideOnMobile: false, isImage: true, mobileSize: 34 },   // Meta
             // Key Tech Icons - Desktop only for performance
             { icon: '🦀', size: 26, left: 42, top: 15, hideOnMobile: true, mobileSize: 14 },    // Rust
             { icon: '🗄️', size: 28, left: 42, top: 58, hideOnMobile: true, mobileSize: 16 },   // Database
@@ -483,20 +477,16 @@ export default function Home() {
             { icon: '☸️', size: 26, left: 45, top: 92, hideOnMobile: true, mobileSize: 14 },   // Kubernetes
             { icon: '🧠', size: 26, left: 8, top: 55, hideOnMobile: true, mobileSize: 14 },    // AI
             { icon: '🚀', size: 26, left: 28, top: 58, hideOnMobile: true, mobileSize: 14 },   // Speed
+            { icon: '☁️', size: 26, left: 50, top: 45, hideOnMobile: true, mobileSize: 14 },   // Cloud
+            { icon: '⚙️', size: 26, left: 70, top: 65, hideOnMobile: true, mobileSize: 14 },   // DevOps
             // Education
             { icon: '🔶', size: 28, left: 5, top: 88, hideOnMobile: false, mobileSize: 18 },   // UT Dallas
           ].map((item, i) => {
             const duration = 25 + (i % 10);
             const delay = (i % 7);
-            const finalMobileSize = item.mobileSize || Math.round(item.size * 0.5); // Use custom mobile size or 50%
-            // Higher opacity for brand logos (images)
-            const opacityClass = item.isImage
-              ? 'opacity-40 dark:opacity-50 md:opacity-55 md:dark:opacity-65 hover:opacity-80 md:hover:opacity-90 dark:hover:opacity-95'
-              : 'opacity-15 dark:opacity-20 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-80 dark:hover:opacity-90';
-            // Stronger glow for brand logos
-            const filterEffect = item.isImage
-              ? 'drop-shadow(0 2px 8px rgba(139, 92, 246, 0.4)) drop-shadow(0 0 12px rgba(96, 165, 250, 0.3))'
-              : 'drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2))';
+            const finalMobileSize = item.mobileSize || Math.round(item.size * 0.5);
+            const opacityClass = 'opacity-15 dark:opacity-20 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-80 dark:hover:opacity-90';
+            const filterEffect = 'drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2))';
             return (
               <div
                 key={`tech-${i}`}
@@ -510,25 +500,7 @@ export default function Home() {
                   filter: filterEffect,
                 }}
               >
-                {item.isImage ? (
-                  <img
-                    src={item.icon}
-                    alt="Tech logo"
-                    className="w-auto h-auto"
-                    loading="lazy"
-                    decoding="async"
-                    width={item.size}
-                    height={item.size}
-                    style={{
-                      width: `${item.size}px`,
-                      height: `${item.size}px`,
-                      objectFit: 'contain',
-                      willChange: 'transform'
-                    }}
-                  />
-                ) : (
-                  <span className="md:text-[length:inherit]" style={{ fontSize: `${item.size}px`, willChange: 'transform' }}>{item.icon}</span>
-                )}
+                <span className="md:text-[length:inherit]" style={{ fontSize: `${item.size}px`, willChange: 'transform' }}>{item.icon}</span>
               </div>
             );
           })}
