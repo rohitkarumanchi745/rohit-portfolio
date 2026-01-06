@@ -457,51 +457,7 @@ export default function Home() {
           })}
         </div>
 
-        {/* Floating Tech Icons - Desktop Only (Hidden on Mobile) */}
-        <div className="absolute inset-0 will-change-transform hidden md:block">
-          {[
-            // All icons hidden on mobile for cleaner look
-            { icon: '🐍', size: 28, left: 8, top: 12 },     // Python
-            { icon: '☕', size: 26, left: 78, top: 22 },    // Java
-            { icon: '🦀', size: 26, left: 42, top: 15 },    // Rust
-            { icon: '🗄️', size: 28, left: 42, top: 58 },   // Database
-            { icon: '🐘', size: 28, left: 18, top: 68 },   // PostgreSQL
-            { icon: '❄️', size: 26, left: 92, top: 35 },   // Snowflake
-            { icon: '🟧', size: 28, left: 56, top: 72 },   // Databricks
-            { icon: '🔄', size: 26, left: 88, top: 48 },   // Kafka
-            { icon: '📊', size: 28, left: 62, top: 18 },   // Analytics
-            { icon: '⚡', size: 26, left: 3, top: 42 },    // Spark
-            { icon: '🐳', size: 28, left: 92, top: 72 },   // Docker
-            { icon: '☸️', size: 26, left: 45, top: 92 },   // Kubernetes
-            { icon: '🧠', size: 26, left: 8, top: 55 },    // AI
-            { icon: '🚀', size: 26, left: 28, top: 58 },   // Speed
-            { icon: '☁️', size: 26, left: 50, top: 45 },   // Cloud
-            { icon: '⚙️', size: 26, left: 70, top: 65 },   // DevOps
-            { icon: '🔶', size: 28, left: 5, top: 88 },    // UT Dallas
-          ].map((item, i) => {
-            const duration = 25 + (i % 10);
-            const delay = (i % 7);
-            const opacityClass = 'opacity-15 dark:opacity-20 md:opacity-30 md:dark:opacity-35 hover:opacity-60 md:hover:opacity-80 dark:hover:opacity-90';
-            const filterEffect = 'drop-shadow(0 1px 4px rgba(139, 92, 246, 0.2))';
-            return (
-              <div
-                key={`tech-${i}`}
-                className={`absolute ${opacityClass} transition-all duration-300`}
-                style={{
-                  fontSize: `${item.size}px`,
-                  left: `${item.left}%`,
-                  top: `${item.top}%`,
-                  animation: `float ${duration}s ease-in-out infinite`,
-                  animationDelay: `${delay}s`,
-                  filter: filterEffect,
-                  willChange: 'transform',
-                }}
-              >
-                <span>{item.icon}</span>
-              </div>
-            );
-          })}
-        </div>
+        {/* Floating Tech Icons - Removed for cleaner look */}
 
         {/* Additional glow spots - Reduced for better performance */}
         <div className="absolute inset-0 hidden md:block pointer-events-none">
