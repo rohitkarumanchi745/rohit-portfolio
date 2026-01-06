@@ -1,8 +1,5 @@
 {
   "regions": ["sin1", "bom1", "hnd1", "iad1"],
-  "framework": "nextjs",
-  "buildCommand": "next build",
-  "outputDirectory": ".next",
   "headers": [
     {
       "source": "/(.*)",
