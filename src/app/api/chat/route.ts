@@ -158,7 +158,40 @@ export async function POST(req: Request) {
   try {
     const { message } = await req.json();
 
-    // Try OpenAI first if API key is available and has quota
+    // Try Claude (Anthropic) first if API key is available
+    if (process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_API_KEY !== 'sk-ant-your-key-here') {
+      try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': process.env.ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 500,
+            system: PORTFOLIO_CONTEXT,
+            messages: [
+              { role: 'user', content: message }
+            ],
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const aiResponse = data.content[0].text;
+          return NextResponse.json({ response: aiResponse });
+        }
+
+        // If Claude fails, fall through to OpenAI or keyword-based
+        console.log('Claude API unavailable, trying fallback');
+      } catch (claudeError) {
+        console.log('Claude error, trying fallback:', claudeError);
+      }
+    }
+
+    // Try OpenAI as secondary option if API key is available
     if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-your-key-here') {
       try {
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -184,7 +217,6 @@ export async function POST(req: Request) {
           return NextResponse.json({ response: aiResponse });
         }
 
-        // If OpenAI fails (quota, etc.), fall through to keyword-based
         console.log('OpenAI API unavailable, using fallback responses');
       } catch (openaiError) {
         console.log('OpenAI error, using fallback:', openaiError);
