@@ -18,17 +18,6 @@ const Scene3D = dynamic(() => import('./components/Scene3D'), {
 
 const projects = [
   {
-    title: "Amaravati - Smart City Mobility Platform",
-    subtitle: "",
-    points: [],
-    stack: [],
-    link: "#",
-    linkText: "Coming Soon",
-    comingSoon: true,
-    location: "Amaravati, Andhra Pradesh",
-    cycleImage: true,
-  },
-  {
     title: "Nava - High-Performance Dating Platform",
     subtitle: "Distributed systems architecture for real-time social connections at scale",
     points: [
@@ -89,6 +78,17 @@ const projects = [
     stack: ["Next.js", "React", "TypeScript", "Three.js", "React Three Fiber", "OpenAI API", "Resend", "Tailwind CSS", "AWS EC2", "Nginx", "CloudFront", "Route 53", "Let's Encrypt", "PM2", "GitHub Actions"],
     link: "https://rohitkarumanchi.com",
     linkText: "Live Site",
+  },
+  {
+    title: "Amaravati - Smart City Mobility Platform",
+    subtitle: "",
+    points: [],
+    stack: [],
+    link: "#",
+    linkText: "Coming Soon",
+    comingSoon: true,
+    location: "Amaravati, Andhra Pradesh",
+    cycleImage: true,
   },
 ];
 
