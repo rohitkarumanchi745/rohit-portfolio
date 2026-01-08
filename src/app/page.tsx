@@ -612,10 +612,10 @@ export default function Home() {
 
               <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
                 {[
-                  "Built real-time data platform: Kafka + Spark + Snowflake for retail analytics serving 100+ users",
-                  "Designed AI Merchandising Copilot (FastAPI + LangGraph): Cut item setup time 65%, reduced errors from 14% to 3%",
-                  "Delivered $1.5M savings in shipping operations, improved associate efficiency 250%",
-                  "Built ML pipelines with Python/TensorFlow/SageMaker: $5M+ annual cost savings in supply chain optimization",
+                  "Built real-time data platform using Kafka, Spark, and Snowflake for retail analytics serving over 100 users across the organization.",
+                  "Designed AI Merchandising Copilot with FastAPI and LangGraph, cutting item setup time by 65% and reducing errors from 14% to 3%.",
+                  "Delivered $1.5M in shipping operations savings while improving associate efficiency by 250% through automated workflows.",
+                  "Built ML pipelines with Python, TensorFlow, and SageMaker, driving over $5M in annual cost savings through supply chain optimization.",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-300">
                     <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
