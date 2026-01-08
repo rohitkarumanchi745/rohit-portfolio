@@ -15,15 +15,15 @@ You are Spuff, Rohit Karumanchi's AI assistant. Answer questions about Rohit's p
 
 # CORE STRENGTHS
 
-1. **Data Engineering** - Expert in building production streaming/batch pipelines with Kafka, Spark, Databricks, Airflow, Snowflake, and dbt. Strong in big data processing with PySpark and Scala.
+1. **Software Engineering & Distributed Systems** - Expert in designing and building distributed systems at scale. Proficient in Rust, Python, and Java for high-performance backend services. Deep understanding of system design patterns including horizontal scaling, caching strategies, message queues, and event-driven architectures. Experience with microservices, API design (REST, GraphQL, gRPC), and building fault-tolerant systems.
 
-2. **Full Stack Development** - Proficient in building scalable backend systems with FastAPI, GraphQL, React Native, Python, Java, and Rust. Experienced in microservices and microfrontend architecture.
+2. **Data Engineering** - Expert in building production streaming/batch pipelines with Kafka, Spark, Databricks, Airflow, Snowflake, and dbt. Strong in big data processing with PySpark and Scala. Hands-on with Kafka consumer groups, offset management, exactly-once semantics, and partition strategies.
 
-3. **ML/Computer Vision** - Skilled in PyTorch, CNN models, OpenCV, Federated Learning, and on-device ML deployment. Built real-time CV systems for production.
+3. **Backend Development** - Proficient in building scalable backend systems with Rust/Axum, FastAPI, GraphQL, Python, Java, and Spring Boot. Experienced in database design (PostgreSQL, DynamoDB, Redis), connection pooling, query optimization, and data modeling.
 
-4. **Cloud & DevOps** - Strong deployment skills with Azure, AWS, Kubernetes, Docker, and CI/CD pipelines. Experience with reliability engineering and observability (Prometheus/Grafana).
+4. **ML/AI Engineering** - Skilled in PyTorch, ONNX Runtime, LangChain, LangGraph, and MCP Server for AI agent workflows. Built production ML systems for computer vision (face detection, liveness verification) and recommendation systems.
 
-5. **Analytics & BI** - Power BI, Tableau, and Streamlit for data visualization and business intelligence.
+5. **Cloud & Infrastructure** - Strong deployment skills with AWS, Azure, Kubernetes, Docker, and CI/CD pipelines. Experience with reliability engineering, observability (Prometheus/Grafana), and infrastructure as code (Terraform).
 
 # PROFESSIONAL EXPERIENCE
 
@@ -102,7 +102,7 @@ function getSmartResponse(message: string): string {
 
   // Strengths & expertise
   if (lowerMsg.includes("strong") || lowerMsg.includes("strength") || lowerMsg.includes("expertise") || lowerMsg.includes("specialize") || lowerMsg.includes("good at") || lowerMsg.includes("expert")) {
-    return "Rohit's core strengths are:\n\n🔷 Data Engineering - Expert in building production streaming/batch pipelines with Kafka, Spark, Databricks, Airflow, Snowflake, and dbt. Strong in big data processing with PySpark and Scala.\n\n🔷 Full Stack Development - Proficient in building scalable backend systems with FastAPI, GraphQL, React Native, Python, Java, and Rust. Experienced in microservices and microfrontend architecture.\n\n🔷 ML/Computer Vision - Skilled in PyTorch, CNN models, OpenCV, Federated Learning, and on-device ML deployment. Built real-time CV systems for production.\n\n🔷 Cloud & DevOps - Strong deployment skills with Azure, AWS, Kubernetes, Docker, and CI/CD pipelines. Experience with reliability engineering and observability (Prometheus/Grafana).\n\n🔷 Analytics & BI - Power BI, Tableau, and Streamlit for data visualization and business intelligence.";
+    return "Rohit's core strengths are:\n\n🔷 Software Engineering & Distributed Systems - Expert in designing and building distributed systems at scale. Proficient in Rust, Python, and Java for high-performance backend services. Deep understanding of system design patterns including horizontal scaling, caching strategies, message queues, and event-driven architectures.\n\n🔷 Data Engineering - Expert in building production streaming/batch pipelines with Kafka, Spark, Databricks, Airflow, Snowflake, and dbt. Hands-on with Kafka consumer groups, offset management, exactly-once semantics, and partition strategies.\n\n🔷 Backend Development - Proficient in building scalable backend systems with Rust/Axum, FastAPI, GraphQL, Python, Java, and Spring Boot. Experienced in database design (PostgreSQL, DynamoDB, Redis), connection pooling, and query optimization.\n\n🔷 ML/AI Engineering - Skilled in PyTorch, ONNX Runtime, LangChain, LangGraph, and MCP Server for AI agent workflows. Built production ML systems for computer vision and recommendation systems.\n\n🔷 Cloud & Infrastructure - Strong deployment skills with AWS, Azure, Kubernetes, Docker, and CI/CD pipelines. Experience with reliability engineering and observability (Prometheus/Grafana).";
   }
 
   // Data engineering
