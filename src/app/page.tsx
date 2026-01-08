@@ -625,6 +625,14 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
+
+              <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2">
+                {["Java", "Spring Boot", "Node.js", "React", "React Native", "Next.js", "PostgreSQL", "DynamoDB", "Kafka", "Docker", "Kubernetes (EKS)", "AWS", "Terraform", "GitHub Actions", "Python", "TensorFlow", "SageMaker", "New Relic", "Splunk"].map((tech) => (
+                  <span key={tech} className="rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {tech}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
