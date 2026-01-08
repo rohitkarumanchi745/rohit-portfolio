@@ -612,10 +612,10 @@ export default function Home() {
 
               <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
                 {[
-                  "Built event-driven microservices for retail order fulfillment, inventory management, and supply chain operations using Java, Spring Boot, and Kafka on AWS.",
-                  "Developed full-stack applications with React, React Native, and Node.js for store operations, customer pickup, and delivery tracking across retail locations.",
+                  "Built event-driven microservices for retail order fulfillment, inventory management, and supply chain operations using Java, Spring Boot, and Kafka on AWS, delivering $1.5M in shipping operations savings.",
+                  "Developed full-stack applications with React, React Native, and Node.js for store operations, customer pickup, and delivery tracking, improving associate efficiency by 250%.",
                   "Implemented containerized deployments using Docker and Kubernetes (EKS), with CI/CD pipelines via GitHub Actions and Infrastructure as Code using Terraform.",
-                  "Designed observability solutions with monitoring, logging, and alerting, ensuring system reliability and participating in on-call rotations for production support.",
+                  "Built ML pipelines with Python, TensorFlow, and SageMaker for supply chain optimization, driving over $5M in annual cost savings. Designed observability solutions ensuring system reliability.",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-300">
                     <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
