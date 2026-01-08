@@ -36,6 +36,20 @@ const projects = [
     featured: true,
   },
   {
+    title: "Supply Chain & Inventory Analytics Platform",
+    subtitle: "Real-time shipping, inventory optimization, and SLA monitoring at scale",
+    points: [
+      "Built real-time supply chain analytics pipelines tracking shipments, inventory levels, and warehouse operations across multiple distribution centers.",
+      "Implemented SLA monitoring dashboards with automated alerting for delivery delays, stock-outs, and fulfillment bottlenecks.",
+      "Developed inventory optimization models to predict demand, reduce carrying costs, and improve order fulfillment rates.",
+      "Created end-to-end visibility for shipping status, route optimization, and delivery time predictions using historical data and ML.",
+      "System Design: Event sourcing pattern for inventory state changes, multi-region active-active replication with eventual consistency, predictive analytics pipeline with ARIMA/Prophet models, circuit breaker pattern for 3PL integrations, data mesh approach for domain products, and real-time SLA alerting with tiered escalation.",
+    ],
+    stack: ["Kafka", "Spark", "Snowflake", "dbt", "Airflow", "Power BI", "Python", "SQL", "Predictive Analytics"],
+    link: "#",
+    linkText: "Details",
+  },
+  {
     title: "Real-time Retail Data Platform (Full Stack)",
     subtitle: "End-to-end data platform: Kafka → Spark/Databricks → Snowflake + React Dashboard with SLAs + Observability",
     points: [
@@ -50,20 +64,6 @@ const projects = [
     stack: ["Kafka", "Spark/Databricks", "Snowflake", "Airflow", "FastAPI", "GraphQL", "React", "TypeScript", "Recharts", "Prometheus/Grafana", "Docker", "Kubernetes", "Azure/AWS", "CI/CD"],
     link: "#",
     linkText: "Architecture",
-  },
-  {
-    title: "Supply Chain & Inventory Analytics Platform",
-    subtitle: "Real-time shipping, inventory optimization, and SLA monitoring at scale",
-    points: [
-      "Built real-time supply chain analytics pipelines tracking shipments, inventory levels, and warehouse operations across multiple distribution centers.",
-      "Implemented SLA monitoring dashboards with automated alerting for delivery delays, stock-outs, and fulfillment bottlenecks.",
-      "Developed inventory optimization models to predict demand, reduce carrying costs, and improve order fulfillment rates.",
-      "Created end-to-end visibility for shipping status, route optimization, and delivery time predictions using historical data and ML.",
-      "System Design: Event sourcing pattern for inventory state changes, multi-region active-active replication with eventual consistency, predictive analytics pipeline with ARIMA/Prophet models, circuit breaker pattern for 3PL integrations, data mesh approach for domain products, and real-time SLA alerting with tiered escalation.",
-    ],
-    stack: ["Kafka", "Spark", "Snowflake", "dbt", "Airflow", "Power BI", "Python", "SQL", "Predictive Analytics"],
-    link: "#",
-    linkText: "Details",
   },
   {
     title: "Interactive 3D Portfolio with AI Chatbot (This Site!)",
