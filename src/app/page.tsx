@@ -28,6 +28,11 @@ const projects = [
       "Intelligent matching engine with multi-dimensional compatibility scoring, geo-filtering, bloom filters for seen-user deduplication, and configurable ranking weights for AI-assisted discovery.",
       "Production infrastructure: Prometheus metrics (latency histograms, error budgets), distributed tracing with correlation IDs, Kubernetes on Docker multi-stage builds, and MCP server for analytics.",
     ],
+    metrics: [
+      { value: "10K+", label: "Concurrent Users", detail: "Tokio async runtime" },
+      { value: "<50ms", label: "P99 Latency", detail: "WebSocket pub/sub" },
+      { value: "99.9%", label: "Match Accuracy", detail: "ML-powered scoring" },
+    ],
     stack: ["Rust/Axum", "async-graphql", "WebSocket", "WebRTC", "ONNX Runtime", "Tokio", "SQLx/Postgres", "Redis", "Prometheus", "Docker", "Kubernetes", "React Native", "PyTorch", "OpenCV", "Vector DB", "MCP Server"],
     link: "https://github.com/rohitkarumanchi745/telugu-dating-backend-main",
     linkText: "Repo",
@@ -43,6 +48,11 @@ const projects = [
       "Created dbt transformation layer with incremental models, snapshot tables for SCD Type 2 tracking of inventory states, and data quality tests with Great Expectations.",
       "Built circuit breaker patterns for 3PL API integrations using resilience4j, with fallback strategies and bulkhead isolation to prevent cascade failures.",
     ],
+    metrics: [
+      { value: "50+", label: "Event Topics", detail: "Kafka partitions" },
+      { value: "99.99%", label: "Data Accuracy", detail: "Exactly-once semantics" },
+      { value: "15%", label: "Stockout Reduction", detail: "Prophet forecasting" },
+    ],
     stack: ["Kafka", "Kafka Streams", "Spark Structured Streaming", "Snowflake", "dbt", "Airflow", "ARIMA/Prophet", "Great Expectations", "Python", "SQL"],
     link: "#",
     linkText: "Details",
@@ -56,6 +66,11 @@ const projects = [
       "Developed LangChain RAG pipelines for customer support automation, integrating vector stores (Pinecone) for order history retrieval, semantic search across fulfillment docs, and context-aware response generation.",
       "Built MCP Server integration for real-time tool execution, exposing inventory APIs, shipping calculators, and order status endpoints as callable tools for AI agents with structured input/output schemas.",
       "Created SLA monitoring with custom Prometheus exporters tracking p50/p95/p99 latencies, agent execution traces via LangSmith, and automated PagerDuty escalations based on error budgets.",
+    ],
+    metrics: [
+      { value: "40%", label: "Faster Routing", detail: "LangGraph agents" },
+      { value: "85%", label: "Auto-Resolution", detail: "RAG pipelines" },
+      { value: "<100ms", label: "API Latency", detail: "FastAPI + DynamoDB" },
     ],
     stack: ["Python", "FastAPI", "LangGraph", "LangChain", "MCP Server", "DynamoDB", "Pinecone", "LangSmith", "React Native", "WebSocket", "Prometheus", "Kubernetes"],
     link: "#",
@@ -71,6 +86,11 @@ const projects = [
       "Deployed on AWS EC2 with Nginx reverse proxy, SSL/TLS (Let's Encrypt), CloudFront CDN, Route 53 DNS, CI/CD via GitHub Actions, and PM2 process management.",
       "System Design: Hybrid SSR/CSR rendering for SEO, BFF pattern with Next.js API routes, lazy-loaded 3D scene with Suspense, hardware-accelerated CSS transforms, CDN edge caching, and zero-downtime deployments.",
     ],
+    metrics: [
+      { value: "<3s", label: "Load Time", detail: "CDN + lazy loading" },
+      { value: "100", label: "Lighthouse Score", detail: "Mobile-first design" },
+      { value: "24/7", label: "Uptime", detail: "AWS EC2 + PM2" },
+    ],
     stack: ["Next.js", "React", "TypeScript", "Three.js", "React Three Fiber", "OpenAI API", "Resend", "Tailwind CSS", "AWS EC2", "Nginx", "CloudFront", "Route 53", "Let's Encrypt", "PM2", "GitHub Actions"],
     link: "https://rohitkarumanchi.com",
     linkText: "Live Site",
@@ -79,6 +99,7 @@ const projects = [
     title: "Amaravati - Smart City Mobility Platform",
     subtitle: "",
     points: [],
+    metrics: [],
     stack: [],
     link: "#",
     linkText: "Coming Soon",
@@ -524,6 +545,29 @@ export default function Home() {
             transform: scale(1.2);
           }
         }
+
+        /* 3D Flip Card Styles */
+        .perspective-1000 {
+          perspective: 1000px;
+        }
+        .transform-style-3d {
+          transform-style: preserve-3d;
+        }
+        .backface-hidden {
+          backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+          transform: rotateY(180deg);
+        }
+        .group:hover .group-hover\\:rotate-y-180 {
+          transform: rotateY(180deg);
+        }
+        .group\\/card:hover .group-hover\\/card\\:rotate-y-180 {
+          transform: rotateY(180deg);
+        }
+        .group\\/resp:hover .group-hover\\/resp\\:rotate-y-180 {
+          transform: rotateY(180deg);
+        }
       `}} />
 
       <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 pt-20 sm:pt-28 lg:pt-32 pb-12 sm:pb-20">
@@ -607,19 +651,85 @@ export default function Home() {
               </p>
 
               <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                  <p className="text-2xl sm:text-3xl font-bold text-purple-400">$1.5M+</p>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Shipping Savings</p>
+                {/* Card 1 - Shipping Savings */}
+                <div className="group perspective-1000 h-32 sm:h-36">
+                  <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
+                    {/* Front */}
+                    <div className="absolute inset-0 backface-hidden text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col justify-center">
+                      <p className="text-2xl sm:text-3xl font-bold text-purple-400">$1.5M+</p>
+                      <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Shipping Savings</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-500 mt-1">Hover for details</p>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute inset-0 backface-hidden rotate-y-180 text-center p-4 rounded-xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 flex flex-col justify-center">
+                      <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-1">How?</p>
+                      <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Real-time Kafka streaming pipelines optimizing carrier selection & route efficiency</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                  <p className="text-2xl sm:text-3xl font-bold text-purple-400">250%</p>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Efficiency Gain</p>
+
+                {/* Card 2 - Efficiency Gain */}
+                <div className="group perspective-1000 h-32 sm:h-36">
+                  <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
+                    {/* Front */}
+                    <div className="absolute inset-0 backface-hidden text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col justify-center">
+                      <p className="text-2xl sm:text-3xl font-bold text-purple-400">250%</p>
+                      <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Efficiency Gain</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-500 mt-1">Hover for details</p>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute inset-0 backface-hidden rotate-y-180 text-center p-4 rounded-xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 flex flex-col justify-center">
+                      <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-1">How?</p>
+                      <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Spark/Databricks automation replacing manual ETL with orchestrated data pipelines</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                  <p className="text-2xl sm:text-3xl font-bold text-purple-400">$5M+</p>
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Annual Cost Savings</p>
+
+                {/* Card 3 - Annual Cost Savings */}
+                <div className="group perspective-1000 h-32 sm:h-36">
+                  <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
+                    {/* Front */}
+                    <div className="absolute inset-0 backface-hidden text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col justify-center">
+                      <p className="text-2xl sm:text-3xl font-bold text-purple-400">$5M+</p>
+                      <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Annual Cost Savings</p>
+                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-500 mt-1">Hover for details</p>
+                    </div>
+                    {/* Back */}
+                    <div className="absolute inset-0 backface-hidden rotate-y-180 text-center p-4 rounded-xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 flex flex-col justify-center">
+                      <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-1">How?</p>
+                      <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">ML-powered fraud detection & predictive analytics reducing chargebacks & losses</p>
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Responsibilities */}
+              <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
+                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Build and operate real-time Kafka streaming + Spark batch pipelines powering order/shipment/fraud analytics at enterprise scale</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
+                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Improve system reliability through Prometheus/Grafana monitoring, alerting, SLA tracking, and operational playbooks</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
+                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Partner with stakeholders across business units to translate requirements into scalable, production-grade data products</span>
+                </li>
+                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
+                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>Power downstream analytics for fraud detection, demand forecasting, and inventory optimization using ML models</span>
+                </li>
+              </ul>
 
               <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2">
                 {["Java", "Spring Boot", "Kafka", "React Native", "Kubernetes", "AWS", "Terraform", "Python", "TensorFlow", "SageMaker"].map((tech) => (
@@ -748,6 +858,27 @@ export default function Home() {
                       <div className={`mt-2 text-sm sm:text-base ${
                         idx === 0 ? "text-slate-700 dark:text-slate-200 font-medium" : "text-slate-600 dark:text-slate-300"
                       }`}>{p.subtitle}</div>
+
+                      {/* Flip Card Metrics */}
+                      {p.metrics && p.metrics.length > 0 && (
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4">
+                          {p.metrics.map((metric: {value: string; label: string; detail: string}, mIdx: number) => (
+                            <div key={mIdx} className="group/card perspective-1000 h-24 sm:h-28">
+                              <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover/card:rotate-y-180">
+                                <div className={`absolute inset-0 backface-hidden text-center p-2 sm:p-3 rounded-lg flex flex-col justify-center ${idx === 0 || p.featured ? "bg-purple-500/15 border border-purple-500/30" : "bg-slate-100 dark:bg-white/10 border border-slate-300 dark:border-white/10"}`}>
+                                  <p className={`text-lg sm:text-2xl font-bold ${idx === 0 || p.featured ? "text-purple-400" : "text-blue-500 dark:text-blue-400"}`}>{metric.value}</p>
+                                  <p className="text-[9px] sm:text-xs font-medium text-slate-700 dark:text-slate-300 leading-tight">{metric.label}</p>
+                                  <p className="text-[8px] sm:text-[10px] text-slate-500 dark:text-slate-500 mt-0.5">Hover</p>
+                                </div>
+                                <div className={`absolute inset-0 backface-hidden rotate-y-180 text-center p-2 sm:p-3 rounded-lg flex flex-col justify-center ${idx === 0 || p.featured ? "bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/40" : "bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-blue-500/30"}`}>
+                                  <p className={`text-[9px] sm:text-xs font-semibold mb-0.5 ${idx === 0 || p.featured ? "text-purple-400" : "text-blue-500 dark:text-blue-400"}`}>How?</p>
+                                  <p className="text-[9px] sm:text-xs text-slate-600 dark:text-slate-300 leading-tight">{metric.detail}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <a
