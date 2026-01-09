@@ -606,24 +606,23 @@ export default function Home() {
                 I build scalable data platforms and production-grade backend systems—streaming pipelines, reliability engineering, and ML-enabled products that power real-world business impact.
               </p>
 
-              <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-                {[
-                  "Built event-driven microservices for retail order fulfillment, inventory management, and supply chain operations using Java, Spring Boot, and Kafka on AWS, delivering $1.5M in shipping operations savings.",
-                  "Developed full-stack applications with React, React Native, and Node.js for store operations, customer pickup, and delivery tracking, improving associate efficiency by 250%.",
-                  "Implemented containerized deployments using Docker and Kubernetes (EKS), with CI/CD pipelines via GitHub Actions and Infrastructure as Code using Terraform.",
-                  "Built ML pipelines with Python, TensorFlow, and SageMaker for supply chain optimization, driving over $5M in annual cost savings. Designed observability solutions ensuring system reliability.",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-300">
-                    <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                  <p className="text-2xl sm:text-3xl font-bold text-purple-400">$1.5M+</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Shipping Savings</p>
+                </div>
+                <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                  <p className="text-2xl sm:text-3xl font-bold text-purple-400">250%</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Efficiency Gain</p>
+                </div>
+                <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+                  <p className="text-2xl sm:text-3xl font-bold text-purple-400">$5M+</p>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Annual Cost Savings</p>
+                </div>
+              </div>
 
               <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2">
-                {["Java", "Spring Boot", "Node.js", "React", "React Native", "Next.js", "PostgreSQL", "DynamoDB", "Kafka", "Docker", "Kubernetes (EKS)", "AWS", "Terraform", "GitHub Actions", "Python", "TensorFlow", "SageMaker", "New Relic", "Splunk"].map((tech) => (
+                {["Java", "Spring Boot", "Kafka", "React Native", "Kubernetes", "AWS", "Terraform", "Python", "TensorFlow", "SageMaker"].map((tech) => (
                   <span key={tech} className="rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
                     {tech}
                   </span>
