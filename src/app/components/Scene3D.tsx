@@ -1,56 +1,66 @@
 "use client";
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars, Float, Sphere } from '@react-three/drei';
+import { OrbitControls, Float, Sphere } from '@react-three/drei';
 import { Suspense, useRef, useState, useEffect, useMemo } from 'react';
 import * as THREE from 'three';
 
-// Flowing particle wave system
-function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 }: { count?: number, color?: string, yOffset?: number, speed?: number }) {
+// Smooth flowing particle field - main visual element
+function FlowingParticles({ count = 3000, color = "#8b5cf6" }: { count?: number, color?: string }) {
   const meshRef = useRef<THREE.Points>(null);
   const geometryRef = useRef<THREE.BufferGeometry>(null);
 
-  const particles = useMemo(() => {
+  const { positions, velocities } = useMemo(() => {
     const positions = new Float32Array(count * 3);
+    const velocities = new Float32Array(count * 3);
 
     for (let i = 0; i < count; i++) {
-      const x = (Math.random() - 0.5) * 8;
-      const y = (Math.random() - 0.5) * 2 + yOffset;
-      const z = (Math.random() - 0.5) * 8;
+      // Spread in a wide field
+      positions[i * 3] = (Math.random() - 0.5) * 12;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 8;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 12;
 
-      positions[i * 3] = x;
-      positions[i * 3 + 1] = y;
-      positions[i * 3 + 2] = z;
+      // Random velocities for flow
+      velocities[i * 3] = (Math.random() - 0.5) * 0.02;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.01;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
     }
 
-    return positions;
-  }, [count, yOffset]);
+    return { positions, velocities };
+  }, [count]);
 
   useEffect(() => {
     if (geometryRef.current) {
-      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     }
-  }, [particles]);
+  }, [positions]);
 
   useFrame((state) => {
-    if (meshRef.current && geometryRef.current) {
-      const time = state.clock.getElapsedTime() * speed;
+    if (geometryRef.current) {
       const posAttr = geometryRef.current.attributes.position;
       if (posAttr) {
-        const positions = posAttr.array as Float32Array;
+        const pos = posAttr.array as Float32Array;
+        const time = state.clock.getElapsedTime();
 
         for (let i = 0; i < count; i++) {
           const i3 = i * 3;
-          const x = positions[i3];
-          const z = positions[i3 + 2];
 
-          // Create wave motion
-          positions[i3 + 1] = yOffset + Math.sin(x * 0.5 + time) * 0.3 + Math.sin(z * 0.5 + time * 0.8) * 0.2;
+          // Flowing motion with noise-like movement
+          pos[i3] += Math.sin(time * 0.3 + pos[i3 + 1] * 0.5) * 0.003;
+          pos[i3 + 1] += Math.cos(time * 0.2 + pos[i3] * 0.3) * 0.002;
+          pos[i3 + 2] += Math.sin(time * 0.25 + pos[i3] * 0.4) * 0.003;
+
+          // Boundary wrap
+          if (pos[i3] > 6) pos[i3] = -6;
+          if (pos[i3] < -6) pos[i3] = 6;
+          if (pos[i3 + 1] > 4) pos[i3 + 1] = -4;
+          if (pos[i3 + 1] < -4) pos[i3 + 1] = 4;
+          if (pos[i3 + 2] > 6) pos[i3 + 2] = -6;
+          if (pos[i3 + 2] < -6) pos[i3 + 2] = 6;
         }
 
         posAttr.needsUpdate = true;
       }
-      meshRef.current.rotation.y = time * 0.05;
     }
   });
 
@@ -58,10 +68,10 @@ function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 
     <points ref={meshRef}>
       <bufferGeometry ref={geometryRef} />
       <pointsMaterial
-        size={0.03}
+        size={0.015}
         color={color}
         transparent
-        opacity={0.8}
+        opacity={0.6}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
       />
@@ -69,20 +79,143 @@ function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 
   );
 }
 
-// Neural network-style connections
-function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
+// Glowing orbs floating around
+function GlowingOrbs({ count = 20 }: { count?: number }) {
+  const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#6366f1', '#818cf8'];
+
+  const orbs = useMemo(() => {
+    return Array.from({ length: count }, (_, i) => ({
+      position: [
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 5,
+        (Math.random() - 0.5) * 8,
+      ] as [number, number, number],
+      size: 0.03 + Math.random() * 0.08,
+      color: colors[i % colors.length],
+      speed: 0.5 + Math.random() * 1.5,
+    }));
+  }, [count]);
+
+  return (
+    <group>
+      {orbs.map((orb, i) => (
+        <Float key={i} speed={orb.speed} floatIntensity={0.8} rotationIntensity={0}>
+          <Sphere args={[orb.size, 16, 16]} position={orb.position}>
+            <meshBasicMaterial color={orb.color} transparent opacity={0.8} />
+          </Sphere>
+        </Float>
+      ))}
+    </group>
+  );
+}
+
+// Central pulsing core
+function CentralCore() {
+  const coreRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
+  const outerRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+
+    if (coreRef.current) {
+      coreRef.current.rotation.y = time * 0.15;
+      coreRef.current.rotation.x = time * 0.1;
+    }
+
+    if (glowRef.current) {
+      const scale = 1 + Math.sin(time * 1.5) * 0.15;
+      glowRef.current.scale.setScalar(scale);
+    }
+
+    if (outerRef.current) {
+      const scale = 1 + Math.sin(time * 1.2 + 1) * 0.1;
+      outerRef.current.scale.setScalar(scale);
+    }
+  });
+
+  return (
+    <group>
+      {/* Wireframe icosahedron core */}
+      <mesh ref={coreRef}>
+        <icosahedronGeometry args={[0.5, 1]} />
+        <meshBasicMaterial color="#a78bfa" wireframe transparent opacity={0.9} />
+      </mesh>
+
+      {/* Inner glow */}
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[0.4, 32, 32]} />
+        <meshBasicMaterial color="#8b5cf6" transparent opacity={0.3} />
+      </mesh>
+
+      {/* Outer glow */}
+      <mesh ref={outerRef}>
+        <sphereGeometry args={[0.65, 32, 32]} />
+        <meshBasicMaterial color="#6366f1" transparent opacity={0.1} />
+      </mesh>
+
+      {/* Bright center point */}
+      <mesh>
+        <sphereGeometry args={[0.15, 16, 16]} />
+        <meshBasicMaterial color="#e0e7ff" />
+      </mesh>
+    </group>
+  );
+}
+
+// Smooth orbital rings
+function OrbitalRings() {
+  const ring1Ref = useRef<THREE.Mesh>(null);
+  const ring2Ref = useRef<THREE.Mesh>(null);
+  const ring3Ref = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+
+    if (ring1Ref.current) {
+      ring1Ref.current.rotation.z = time * 0.3;
+    }
+    if (ring2Ref.current) {
+      ring2Ref.current.rotation.z = -time * 0.2;
+    }
+    if (ring3Ref.current) {
+      ring3Ref.current.rotation.z = time * 0.15;
+    }
+  });
+
+  return (
+    <group>
+      <mesh ref={ring1Ref} rotation={[0.5, 0, 0]}>
+        <torusGeometry args={[1, 0.008, 16, 100]} />
+        <meshBasicMaterial color="#8b5cf6" transparent opacity={0.6} />
+      </mesh>
+
+      <mesh ref={ring2Ref} rotation={[1.2, 0.3, 0]}>
+        <torusGeometry args={[1.3, 0.006, 16, 100]} />
+        <meshBasicMaterial color="#6366f1" transparent opacity={0.5} />
+      </mesh>
+
+      <mesh ref={ring3Ref} rotation={[0.8, -0.2, 0]}>
+        <torusGeometry args={[1.6, 0.005, 16, 100]} />
+        <meshBasicMaterial color="#a78bfa" transparent opacity={0.4} />
+      </mesh>
+    </group>
+  );
+}
+
+// Subtle connection lines between nearby particles
+function ConnectionLines({ nodeCount = 25 }: { nodeCount?: number }) {
   const groupRef = useRef<THREE.Group>(null);
-  const linesGeometryRef = useRef<THREE.BufferGeometry>(null);
+  const geometryRef = useRef<THREE.BufferGeometry>(null);
 
   const { nodes, linePositions } = useMemo(() => {
     const nodes: THREE.Vector3[] = [];
-    const linePositions: number[] = [];
 
-    // Create nodes in a spherical arrangement
+    // Create nodes in spherical distribution
     for (let i = 0; i < nodeCount; i++) {
       const phi = Math.acos(-1 + (2 * i) / nodeCount);
       const theta = Math.sqrt(nodeCount * Math.PI) * phi;
-      const radius = 1.5 + Math.random() * 0.5;
+      const radius = 2 + Math.random() * 0.8;
 
       nodes.push(new THREE.Vector3(
         radius * Math.cos(theta) * Math.sin(phi),
@@ -91,11 +224,12 @@ function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
       ));
     }
 
-    // Create connections between nearby nodes
+    // Create connections
+    const linePositions: number[] = [];
     for (let i = 0; i < nodes.length; i++) {
       for (let j = i + 1; j < nodes.length; j++) {
         const distance = nodes[i].distanceTo(nodes[j]);
-        if (distance < 1.2) {
+        if (distance < 1.8) {
           linePositions.push(
             nodes[i].x, nodes[i].y, nodes[i].z,
             nodes[j].x, nodes[j].y, nodes[j].z
@@ -108,291 +242,73 @@ function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
   }, [nodeCount]);
 
   useEffect(() => {
-    if (linesGeometryRef.current) {
-      linesGeometryRef.current.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    if (geometryRef.current && linePositions.length > 0) {
+      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
     }
   }, [linePositions]);
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
-      groupRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.1;
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
     }
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Connection lines */}
-      <lineSegments>
-        <bufferGeometry ref={linesGeometryRef} />
-        <lineBasicMaterial color="#3b82f6" transparent opacity={0.3} blending={THREE.AdditiveBlending} />
-      </lineSegments>
+    <group ref={groupRef}>
+      {linePositions.length > 0 && (
+        <lineSegments>
+          <bufferGeometry ref={geometryRef} />
+          <lineBasicMaterial color="#6366f1" transparent opacity={0.15} blending={THREE.AdditiveBlending} />
+        </lineSegments>
+      )}
 
-      {/* Nodes */}
+      {/* Node points */}
       {nodes.map((pos, i) => (
-        <Float key={i} speed={2 + i % 3} floatIntensity={0.3}>
-          <mesh position={pos}>
-            <sphereGeometry args={[0.04 + (i % 3) * 0.02, 12, 12]} />
-            <meshBasicMaterial
-              color={['#8b5cf6', '#3b82f6', '#06b6d4', '#22c55e'][i % 4]}
-              transparent
-              opacity={0.9}
-            />
-          </mesh>
-        </Float>
+        <mesh key={i} position={pos}>
+          <sphereGeometry args={[0.025, 8, 8]} />
+          <meshBasicMaterial
+            color={['#8b5cf6', '#a78bfa', '#6366f1'][i % 3]}
+            transparent
+            opacity={0.7}
+          />
+        </mesh>
       ))}
     </group>
   );
 }
 
-// Data stream lines flowing upward
-function DataStream({ position, color }: { position: [number, number, number], color: string }) {
-  const meshRef = useRef<THREE.Points>(null);
-  const geometryRef = useRef<THREE.BufferGeometry>(null);
-  const particleCount = 50;
-
-  const particles = useMemo(() => {
-    const positions = new Float32Array(particleCount * 3);
-    for (let i = 0; i < particleCount; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 0.3;
-      positions[i * 3 + 1] = (i / particleCount) * 4 - 2;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
-    }
-    return positions;
-  }, []);
-
-  useEffect(() => {
-    if (geometryRef.current) {
-      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(particles, 3));
-    }
-  }, [particles]);
+// Main scene composition
+function AbstractScene({ isMobile }: { isMobile: boolean }) {
+  const sceneRef = useRef<THREE.Group>(null);
 
   useFrame((state) => {
-    if (meshRef.current && geometryRef.current) {
-      const posAttr = geometryRef.current.attributes.position;
-      if (posAttr) {
-        const positions = posAttr.array as Float32Array;
-        const time = state.clock.getElapsedTime();
-
-        for (let i = 0; i < particleCount; i++) {
-          positions[i * 3 + 1] += 0.03;
-          if (positions[i * 3 + 1] > 2) {
-            positions[i * 3 + 1] = -2;
-          }
-          positions[i * 3] = Math.sin(time + i * 0.1) * 0.15;
-          positions[i * 3 + 2] = Math.cos(time + i * 0.1) * 0.15;
-        }
-
-        posAttr.needsUpdate = true;
-      }
+    if (sceneRef.current) {
+      // Very subtle scene breathing
+      const time = state.clock.getElapsedTime();
+      sceneRef.current.rotation.y = Math.sin(time * 0.1) * 0.05;
     }
   });
 
   return (
-    <points ref={meshRef} position={position}>
-      <bufferGeometry ref={geometryRef} />
-      <pointsMaterial
-        size={0.05}
-        color={color}
-        transparent
-        opacity={0.9}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
+    <group ref={sceneRef}>
+      {/* Central core with rings */}
+      <CentralCore />
+      <OrbitalRings />
 
-// Glowing central orb
-function CentralOrb() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const glowRef = useRef<THREE.Mesh>(null);
+      {/* Connection network */}
+      <ConnectionLines nodeCount={isMobile ? 15 : 25} />
 
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-    if (meshRef.current) {
-      meshRef.current.rotation.y = time * 0.2;
-      meshRef.current.rotation.x = time * 0.1;
-    }
-    if (glowRef.current) {
-      glowRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.1);
-    }
-  });
-
-  return (
-    <group position={[0, 0, 0]}>
-      {/* Inner core */}
-      <mesh ref={meshRef}>
-        <icosahedronGeometry args={[0.4, 2]} />
-        <meshBasicMaterial
-          color="#8b5cf6"
-          wireframe
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-
-      {/* Outer glow */}
-      <mesh ref={glowRef}>
-        <sphereGeometry args={[0.5, 32, 32]} />
-        <meshBasicMaterial
-          color="#8b5cf6"
-          transparent
-          opacity={0.15}
-        />
-      </mesh>
-
-      {/* Bright center */}
-      <mesh>
-        <sphereGeometry args={[0.2, 32, 32]} />
-        <meshBasicMaterial color="#c4b5fd" />
-      </mesh>
-    </group>
-  );
-}
-
-// Orbiting rings
-function OrbitRing({ radius, speed, color, tilt }: { radius: number, speed: number, color: string, tilt: number }) {
-  const ringRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (ringRef.current) {
-      ringRef.current.rotation.z = state.clock.getElapsedTime() * speed;
-    }
-  });
-
-  return (
-    <mesh ref={ringRef} rotation={[tilt, 0, 0]}>
-      <torusGeometry args={[radius, 0.01, 8, 100]} />
-      <meshBasicMaterial color={color} transparent opacity={0.5} />
-    </mesh>
-  );
-}
-
-// Floating data particles in background
-function BackgroundParticles({ count = 500 }: { count?: number }) {
-  const meshRef = useRef<THREE.Points>(null);
-  const geometryRef = useRef<THREE.BufferGeometry>(null);
-
-  const particles = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-
-    const colorPalette = [
-      new THREE.Color('#8b5cf6'),
-      new THREE.Color('#3b82f6'),
-      new THREE.Color('#06b6d4'),
-      new THREE.Color('#22c55e'),
-    ];
-
-    for (let i = 0; i < count; i++) {
-      // Spread particles in a large sphere
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
-      const radius = 3 + Math.random() * 5;
-
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-
-      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-      colors[i * 3] = color.r;
-      colors[i * 3 + 1] = color.g;
-      colors[i * 3 + 2] = color.b;
-    }
-
-    return { positions, colors };
-  }, [count]);
-
-  useEffect(() => {
-    if (geometryRef.current) {
-      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(particles.positions, 3));
-      geometryRef.current.setAttribute('color', new THREE.BufferAttribute(particles.colors, 3));
-    }
-  }, [particles]);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.02;
-    }
-  });
-
-  return (
-    <points ref={meshRef}>
-      <bufferGeometry ref={geometryRef} />
-      <pointsMaterial
-        size={0.04}
-        vertexColors
-        transparent
-        opacity={0.7}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
-
-// Main abstract data scene
-function AbstractDataScene({ isMobile }: { isMobile: boolean }) {
-  return (
-    <group>
-      {/* Central glowing orb */}
-      <CentralOrb />
-
-      {/* Orbiting rings */}
-      <OrbitRing radius={0.8} speed={0.5} color="#8b5cf6" tilt={0.5} />
-      <OrbitRing radius={1.1} speed={-0.3} color="#3b82f6" tilt={1.2} />
-      <OrbitRing radius={1.4} speed={0.2} color="#06b6d4" tilt={0.8} />
-
-      {/* Neural network connections */}
-      <NeuralNetwork nodeCount={isMobile ? 20 : 35} />
-
-      {/* Particle waves */}
-      <ParticleWave count={isMobile ? 800 : 1500} color="#06b6d4" yOffset={-1} speed={0.8} />
-      <ParticleWave count={isMobile ? 600 : 1200} color="#8b5cf6" yOffset={0.5} speed={0.6} />
-
-      {/* Data streams */}
-      <DataStream position={[-2, 0, -1]} color="#22c55e" />
-      <DataStream position={[2, 0, -1]} color="#3b82f6" />
-      <DataStream position={[0, 0, -2]} color="#8b5cf6" />
-      <DataStream position={[-1.5, 0, 1]} color="#06b6d4" />
-      <DataStream position={[1.5, 0, 1]} color="#f59e0b" />
-
-      {/* Background floating particles */}
-      <BackgroundParticles count={isMobile ? 300 : 600} />
+      {/* Flowing particle field */}
+      <FlowingParticles count={isMobile ? 1500 : 3000} color="#8b5cf6" />
+      <FlowingParticles count={isMobile ? 800 : 1500} color="#6366f1" />
 
       {/* Floating glowing orbs */}
-      {[...Array(isMobile ? 8 : 15)].map((_, i) => {
-        const colors = ['#8b5cf6', '#3b82f6', '#06b6d4', '#22c55e', '#f59e0b'];
-        return (
-          <Float
-            key={i}
-            speed={1.5 + (i % 3) * 0.5}
-            rotationIntensity={0.2}
-            floatIntensity={1}
-          >
-            <Sphere
-              args={[0.05 + (i % 3) * 0.02, 16, 16]}
-              position={[
-                Math.sin(i * 0.8) * 3,
-                Math.cos(i * 0.5) * 1.5,
-                Math.cos(i * 0.8) * 3,
-              ]}
-            >
-              <meshBasicMaterial
-                color={colors[i % colors.length]}
-                transparent
-                opacity={0.9}
-              />
-            </Sphere>
-          </Float>
-        );
-      })}
+      <GlowingOrbs count={isMobile ? 12 : 25} />
     </group>
   );
 }
 
-// Main 3D Scene export
+// Main export
 export default function Scene3D() {
   const [isMobile, setIsMobile] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -415,55 +331,51 @@ export default function Scene3D() {
 
   if (!isReady) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl">
+      <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-500 border-r-transparent"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full bg-gradient-to-b from-slate-900 via-slate-950 to-black rounded-2xl overflow-hidden">
       <Canvas
-        camera={{ position: [0, 0, 5], fov: 60 }}
+        camera={{ position: [0, 0, 6], fov: 50 }}
         dpr={isMobile ? [1, 1] : [1, 2]}
-        gl={{ antialias: !isMobile, alpha: true, powerPreference: 'high-performance' }}
+        gl={{
+          antialias: !isMobile,
+          alpha: false,
+          powerPreference: 'high-performance',
+        }}
         className="cursor-grab active:cursor-grabbing"
         frameloop="always"
         performance={{ min: 0.5 }}
       >
         <Suspense fallback={null}>
+          {/* Deep space background color */}
+          <color attach="background" args={['#0a0a1a']} />
+
           {/* Subtle ambient light */}
-          <ambientLight intensity={0.2} />
+          <ambientLight intensity={0.1} />
 
-          {/* Point lights for glow effect */}
-          <pointLight position={[0, 0, 0]} intensity={2} color="#8b5cf6" distance={5} decay={2} />
-          <pointLight position={[2, 2, 2]} intensity={1} color="#3b82f6" distance={8} decay={2} />
-          <pointLight position={[-2, -1, 2]} intensity={0.8} color="#06b6d4" distance={6} decay={2} />
+          {/* Colored point lights for glow */}
+          <pointLight position={[0, 0, 2]} intensity={1} color="#8b5cf6" distance={10} decay={2} />
+          <pointLight position={[3, 2, 0]} intensity={0.5} color="#6366f1" distance={8} decay={2} />
+          <pointLight position={[-3, -1, 1]} intensity={0.3} color="#a78bfa" distance={6} decay={2} />
 
-          {/* Stars background */}
-          <Stars
-            radius={80}
-            depth={50}
-            count={isMobile ? 2000 : 5000}
-            factor={4}
-            saturation={0}
-            fade
-            speed={0.5}
-          />
-
-          {/* Main abstract scene */}
-          <AbstractDataScene isMobile={isMobile} />
+          {/* Main scene */}
+          <AbstractScene isMobile={isMobile} />
 
           {/* Camera controls */}
           <OrbitControls
             enableZoom={false}
             enablePan={false}
-            minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI - Math.PI / 4}
+            minPolarAngle={Math.PI / 3}
+            maxPolarAngle={Math.PI - Math.PI / 3}
             autoRotate
-            autoRotateSpeed={isMobile ? 0.3 : 0.5}
+            autoRotateSpeed={0.3}
             dampingFactor={0.05}
             enableDamping
           />
