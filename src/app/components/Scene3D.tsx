@@ -8,10 +8,10 @@ import * as THREE from 'three';
 // Flowing particle wave system
 function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 }: { count?: number, color?: string, yOffset?: number, speed?: number }) {
   const meshRef = useRef<THREE.Points>(null);
+  const geometryRef = useRef<THREE.BufferGeometry>(null);
 
   const particles = useMemo(() => {
     const positions = new Float32Array(count * 3);
-    const scales = new Float32Array(count);
 
     for (let i = 0; i < count; i++) {
       const x = (Math.random() - 0.5) * 8;
@@ -21,41 +21,42 @@ function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 
       positions[i * 3] = x;
       positions[i * 3 + 1] = y;
       positions[i * 3 + 2] = z;
-      scales[i] = Math.random();
     }
 
-    return { positions, scales };
+    return positions;
   }, [count, yOffset]);
 
+  useEffect(() => {
+    if (geometryRef.current) {
+      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+    }
+  }, [particles]);
+
   useFrame((state) => {
-    if (meshRef.current) {
+    if (meshRef.current && geometryRef.current) {
       const time = state.clock.getElapsedTime() * speed;
-      const positions = meshRef.current.geometry.attributes.position.array as Float32Array;
+      const posAttr = geometryRef.current.attributes.position;
+      if (posAttr) {
+        const positions = posAttr.array as Float32Array;
 
-      for (let i = 0; i < count; i++) {
-        const i3 = i * 3;
-        const x = positions[i3];
-        const z = positions[i3 + 2];
+        for (let i = 0; i < count; i++) {
+          const i3 = i * 3;
+          const x = positions[i3];
+          const z = positions[i3 + 2];
 
-        // Create wave motion
-        positions[i3 + 1] = yOffset + Math.sin(x * 0.5 + time) * 0.3 + Math.sin(z * 0.5 + time * 0.8) * 0.2;
+          // Create wave motion
+          positions[i3 + 1] = yOffset + Math.sin(x * 0.5 + time) * 0.3 + Math.sin(z * 0.5 + time * 0.8) * 0.2;
+        }
+
+        posAttr.needsUpdate = true;
       }
-
-      meshRef.current.geometry.attributes.position.needsUpdate = true;
       meshRef.current.rotation.y = time * 0.05;
     }
   });
 
   return (
     <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={particles.positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
+      <bufferGeometry ref={geometryRef} />
       <pointsMaterial
         size={0.03}
         color={color}
@@ -71,7 +72,7 @@ function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 
 // Neural network-style connections
 function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
   const groupRef = useRef<THREE.Group>(null);
-  const linesRef = useRef<THREE.LineSegments>(null);
+  const linesGeometryRef = useRef<THREE.BufferGeometry>(null);
 
   const { nodes, linePositions } = useMemo(() => {
     const nodes: THREE.Vector3[] = [];
@@ -106,6 +107,12 @@ function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
     return { nodes, linePositions: new Float32Array(linePositions) };
   }, [nodeCount]);
 
+  useEffect(() => {
+    if (linesGeometryRef.current) {
+      linesGeometryRef.current.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    }
+  }, [linePositions]);
+
   useFrame((state) => {
     if (groupRef.current) {
       groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
@@ -116,15 +123,8 @@ function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
       {/* Connection lines */}
-      <lineSegments ref={linesRef}>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            count={linePositions.length / 3}
-            array={linePositions}
-            itemSize={3}
-          />
-        </bufferGeometry>
+      <lineSegments>
+        <bufferGeometry ref={linesGeometryRef} />
         <lineBasicMaterial color="#3b82f6" transparent opacity={0.3} blending={THREE.AdditiveBlending} />
       </lineSegments>
 
@@ -148,6 +148,7 @@ function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
 // Data stream lines flowing upward
 function DataStream({ position, color }: { position: [number, number, number], color: string }) {
   const meshRef = useRef<THREE.Points>(null);
+  const geometryRef = useRef<THREE.BufferGeometry>(null);
   const particleCount = 50;
 
   const particles = useMemo(() => {
@@ -160,34 +161,36 @@ function DataStream({ position, color }: { position: [number, number, number], c
     return positions;
   }, []);
 
+  useEffect(() => {
+    if (geometryRef.current) {
+      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+    }
+  }, [particles]);
+
   useFrame((state) => {
-    if (meshRef.current) {
-      const positions = meshRef.current.geometry.attributes.position.array as Float32Array;
-      const time = state.clock.getElapsedTime();
+    if (meshRef.current && geometryRef.current) {
+      const posAttr = geometryRef.current.attributes.position;
+      if (posAttr) {
+        const positions = posAttr.array as Float32Array;
+        const time = state.clock.getElapsedTime();
 
-      for (let i = 0; i < particleCount; i++) {
-        positions[i * 3 + 1] += 0.03;
-        if (positions[i * 3 + 1] > 2) {
-          positions[i * 3 + 1] = -2;
+        for (let i = 0; i < particleCount; i++) {
+          positions[i * 3 + 1] += 0.03;
+          if (positions[i * 3 + 1] > 2) {
+            positions[i * 3 + 1] = -2;
+          }
+          positions[i * 3] = Math.sin(time + i * 0.1) * 0.15;
+          positions[i * 3 + 2] = Math.cos(time + i * 0.1) * 0.15;
         }
-        positions[i * 3] = Math.sin(time + i * 0.1) * 0.15;
-        positions[i * 3 + 2] = Math.cos(time + i * 0.1) * 0.15;
-      }
 
-      meshRef.current.geometry.attributes.position.needsUpdate = true;
+        posAttr.needsUpdate = true;
+      }
     }
   });
 
   return (
     <points ref={meshRef} position={position}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particleCount}
-          array={particles}
-          itemSize={3}
-        />
-      </bufferGeometry>
+      <bufferGeometry ref={geometryRef} />
       <pointsMaterial
         size={0.05}
         color={color}
@@ -269,6 +272,7 @@ function OrbitRing({ radius, speed, color, tilt }: { radius: number, speed: numb
 // Floating data particles in background
 function BackgroundParticles({ count = 500 }: { count?: number }) {
   const meshRef = useRef<THREE.Points>(null);
+  const geometryRef = useRef<THREE.BufferGeometry>(null);
 
   const particles = useMemo(() => {
     const positions = new Float32Array(count * 3);
@@ -300,6 +304,13 @@ function BackgroundParticles({ count = 500 }: { count?: number }) {
     return { positions, colors };
   }, [count]);
 
+  useEffect(() => {
+    if (geometryRef.current) {
+      geometryRef.current.setAttribute('position', new THREE.BufferAttribute(particles.positions, 3));
+      geometryRef.current.setAttribute('color', new THREE.BufferAttribute(particles.colors, 3));
+    }
+  }, [particles]);
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.02;
@@ -308,20 +319,7 @@ function BackgroundParticles({ count = 500 }: { count?: number }) {
 
   return (
     <points ref={meshRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={count}
-          array={particles.positions}
-          itemSize={3}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          count={count}
-          array={particles.colors}
-          itemSize={3}
-        />
-      </bufferGeometry>
+      <bufferGeometry ref={geometryRef} />
       <pointsMaterial
         size={0.04}
         vertexColors
@@ -396,33 +394,21 @@ function AbstractDataScene({ isMobile }: { isMobile: boolean }) {
 
 // Main 3D Scene export
 export default function Scene3D() {
-  const [isDark, setIsDark] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsReady(true), 100);
 
-    const checkDarkMode = () => {
-      const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      setIsDark(darkModeQuery.matches);
-    };
-
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
 
-    checkDarkMode();
     checkMobile();
-
-    const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const listener = (e: MediaQueryListEvent) => setIsDark(e.matches);
-    darkModeQuery.addEventListener('change', listener);
     window.addEventListener('resize', checkMobile);
 
     return () => {
       clearTimeout(timer);
-      darkModeQuery.removeEventListener('change', listener);
       window.removeEventListener('resize', checkMobile);
     };
   }, []);
