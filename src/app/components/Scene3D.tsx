@@ -1,118 +1,143 @@
 "use client";
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars, Float, Sphere, RoundedBox } from '@react-three/drei';
-import { Suspense, useRef, useState, useEffect } from 'react';
+import { OrbitControls, Stars, Float, Sphere } from '@react-three/drei';
+import { Suspense, useRef, useState, useEffect, useMemo } from 'react';
+import * as THREE from 'three';
 
-// Glowing Monitor/Screen component
-function Monitor({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
-  const screenRef = useRef<any>(null);
+// Flowing particle wave system
+function ParticleWave({ count = 2000, color = "#06b6d4", yOffset = 0, speed = 1 }: { count?: number, color?: string, yOffset?: number, speed?: number }) {
+  const meshRef = useRef<THREE.Points>(null);
+
+  const particles = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    const scales = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      const x = (Math.random() - 0.5) * 8;
+      const y = (Math.random() - 0.5) * 2 + yOffset;
+      const z = (Math.random() - 0.5) * 8;
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+      scales[i] = Math.random();
+    }
+
+    return { positions, scales };
+  }, [count, yOffset]);
 
   useFrame((state) => {
-    if (screenRef.current) {
-      screenRef.current.material.emissiveIntensity = 0.6 + Math.sin(state.clock.getElapsedTime() * 2) * 0.2;
+    if (meshRef.current) {
+      const time = state.clock.getElapsedTime() * speed;
+      const positions = meshRef.current.geometry.attributes.position.array as Float32Array;
+
+      for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        const x = positions[i3];
+        const z = positions[i3 + 2];
+
+        // Create wave motion
+        positions[i3 + 1] = yOffset + Math.sin(x * 0.5 + time) * 0.3 + Math.sin(z * 0.5 + time * 0.8) * 0.2;
+      }
+
+      meshRef.current.geometry.attributes.position.needsUpdate = true;
+      meshRef.current.rotation.y = time * 0.05;
     }
   });
 
   return (
-    <group position={position}>
-      {/* Monitor stand base */}
-      <mesh position={[0, -0.4, 0]} castShadow>
-        <cylinderGeometry args={[0.25, 0.3, 0.05, 32]} />
-        <meshStandardMaterial color="#4a5568" metalness={0.8} roughness={0.2} />
-      </mesh>
-
-      {/* Monitor stand pole */}
-      <mesh position={[0, -0.2, 0]} castShadow>
-        <cylinderGeometry args={[0.04, 0.04, 0.35, 16]} />
-        <meshStandardMaterial color="#4a5568" metalness={0.8} roughness={0.2} />
-      </mesh>
-
-      {/* Monitor frame */}
-      <RoundedBox args={[1.2, 0.75, 0.05]} radius={0.02} smoothness={4} position={[0, 0.15, 0]} castShadow>
-        <meshStandardMaterial color="#1a1a2e" metalness={0.5} roughness={0.3} />
-      </RoundedBox>
-
-      {/* Screen with glow */}
-      <mesh ref={screenRef} position={[0, 0.15, 0.03]}>
-        <planeGeometry args={[1.1, 0.65]} />
-        <meshStandardMaterial
-          color={isDark ? "#1e3a5f" : "#e0f2fe"}
-          emissive="#3b82f6"
-          emissiveIntensity={0.6}
+    <points ref={meshRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={particles.positions}
+          itemSize={3}
         />
-      </mesh>
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.03}
+        color={color}
+        transparent
+        opacity={0.8}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
 
-      {/* Code lines on screen */}
-      {[...Array(6)].map((_, i) => (
-        <mesh key={`line-${i}`} position={[-0.35 + (i % 2) * 0.1, 0.32 - i * 0.09, 0.04]}>
-          <boxGeometry args={[0.25 + (i % 3) * 0.15, 0.025, 0.001]} />
-          <meshBasicMaterial
-            color={['#22c55e', '#3b82f6', '#a855f7', '#f59e0b', '#ec4899', '#06b6d4'][i]}
+// Neural network-style connections
+function NeuralNetwork({ nodeCount = 30 }: { nodeCount?: number }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const linesRef = useRef<THREE.LineSegments>(null);
+
+  const { nodes, linePositions } = useMemo(() => {
+    const nodes: THREE.Vector3[] = [];
+    const linePositions: number[] = [];
+
+    // Create nodes in a spherical arrangement
+    for (let i = 0; i < nodeCount; i++) {
+      const phi = Math.acos(-1 + (2 * i) / nodeCount);
+      const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+      const radius = 1.5 + Math.random() * 0.5;
+
+      nodes.push(new THREE.Vector3(
+        radius * Math.cos(theta) * Math.sin(phi),
+        radius * Math.sin(theta) * Math.sin(phi),
+        radius * Math.cos(phi)
+      ));
+    }
+
+    // Create connections between nearby nodes
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const distance = nodes[i].distanceTo(nodes[j]);
+        if (distance < 1.2) {
+          linePositions.push(
+            nodes[i].x, nodes[i].y, nodes[i].z,
+            nodes[j].x, nodes[j].y, nodes[j].z
+          );
+        }
+      }
+    }
+
+    return { nodes, linePositions: new Float32Array(linePositions) };
+  }, [nodeCount]);
+
+  useFrame((state) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
+      groupRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.2) * 0.1;
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={[0, 0, 0]}>
+      {/* Connection lines */}
+      <lineSegments ref={linesRef}>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            count={linePositions.length / 3}
+            array={linePositions}
+            itemSize={3}
           />
-        </mesh>
-      ))}
-    </group>
-  );
-}
+        </bufferGeometry>
+        <lineBasicMaterial color="#3b82f6" transparent opacity={0.3} blending={THREE.AdditiveBlending} />
+      </lineSegments>
 
-// Keyboard component
-function Keyboard({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
-  return (
-    <group position={position}>
-      {/* Keyboard base */}
-      <RoundedBox args={[0.9, 0.04, 0.35]} radius={0.01} smoothness={4} castShadow>
-        <meshStandardMaterial color={isDark ? "#2d3748" : "#e2e8f0"} metalness={0.3} roughness={0.6} />
-      </RoundedBox>
-
-      {/* Keys */}
-      {[...Array(4)].map((_, row) => (
-        [...Array(12)].map((_, col) => (
-          <mesh
-            key={`key-${row}-${col}`}
-            position={[-0.38 + col * 0.065, 0.025, -0.12 + row * 0.07]}
-            castShadow
-          >
-            <boxGeometry args={[0.05, 0.015, 0.05]} />
-            <meshStandardMaterial
-              color={isDark ? "#4a5568" : "#cbd5e1"}
-              roughness={0.7}
+      {/* Nodes */}
+      {nodes.map((pos, i) => (
+        <Float key={i} speed={2 + i % 3} floatIntensity={0.3}>
+          <mesh position={pos}>
+            <sphereGeometry args={[0.04 + (i % 3) * 0.02, 12, 12]} />
+            <meshBasicMaterial
+              color={['#8b5cf6', '#3b82f6', '#06b6d4', '#22c55e'][i % 4]}
+              transparent
+              opacity={0.9}
             />
-          </mesh>
-        ))
-      ))}
-    </group>
-  );
-}
-
-// Coffee Mug
-function CoffeeMug({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
-  return (
-    <group position={position}>
-      {/* Mug body */}
-      <mesh castShadow>
-        <cylinderGeometry args={[0.08, 0.07, 0.15, 24]} />
-        <meshStandardMaterial color={isDark ? "#7c3aed" : "#8b5cf6"} roughness={0.4} />
-      </mesh>
-
-      {/* Handle */}
-      <mesh position={[0.1, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-        <torusGeometry args={[0.045, 0.015, 8, 16, Math.PI]} />
-        <meshStandardMaterial color={isDark ? "#7c3aed" : "#8b5cf6"} roughness={0.4} />
-      </mesh>
-
-      {/* Coffee surface */}
-      <mesh position={[0, 0.06, 0]}>
-        <circleGeometry args={[0.065, 24]} />
-        <meshStandardMaterial color="#4a3728" />
-      </mesh>
-
-      {/* Steam particles */}
-      {[...Array(3)].map((_, i) => (
-        <Float key={i} speed={2} floatIntensity={0.5}>
-          <mesh position={[-0.02 + i * 0.02, 0.12 + i * 0.03, 0]}>
-            <sphereGeometry args={[0.008, 8, 8]} />
-            <meshBasicMaterial color="#ffffff" transparent opacity={0.4} />
           </mesh>
         </Float>
       ))}
@@ -120,145 +145,246 @@ function CoffeeMug({ position, isDark }: { position: [number, number, number], i
   );
 }
 
-// Plant pot for decoration
-function Plant({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
-  return (
-    <group position={position}>
-      {/* Pot */}
-      <mesh castShadow>
-        <cylinderGeometry args={[0.08, 0.06, 0.12, 16]} />
-        <meshStandardMaterial color="#d97706" roughness={0.8} />
-      </mesh>
+// Data stream lines flowing upward
+function DataStream({ position, color }: { position: [number, number, number], color: string }) {
+  const meshRef = useRef<THREE.Points>(null);
+  const particleCount = 50;
 
-      {/* Soil */}
-      <mesh position={[0, 0.05, 0]}>
-        <circleGeometry args={[0.07, 16]} />
-        <meshStandardMaterial color="#4a3728" />
-      </mesh>
-
-      {/* Plant leaves */}
-      {[...Array(5)].map((_, i) => {
-        const angle = (i / 5) * Math.PI * 2;
-        return (
-          <mesh
-            key={i}
-            position={[Math.cos(angle) * 0.03, 0.12 + i * 0.02, Math.sin(angle) * 0.03]}
-            rotation={[0.3 + i * 0.1, angle, 0.2]}
-            castShadow
-          >
-            <sphereGeometry args={[0.04, 8, 8]} />
-            <meshStandardMaterial color="#22c55e" roughness={0.8} />
-          </mesh>
-        );
-      })}
-    </group>
-  );
-}
-
-// Floating tech icons (simple glowing shapes)
-function FloatingIcon({ position, color, shape }: { position: [number, number, number], color: string, shape: 'sphere' | 'cube' | 'octahedron' }) {
-  const meshRef = useRef<any>(null);
+  const particles = useMemo(() => {
+    const positions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      positions[i * 3] = (Math.random() - 0.5) * 0.3;
+      positions[i * 3 + 1] = (i / particleCount) * 4 - 2;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+    }
+    return positions;
+  }, []);
 
   useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.5;
-      meshRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.2;
+      const positions = meshRef.current.geometry.attributes.position.array as Float32Array;
+      const time = state.clock.getElapsedTime();
+
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3 + 1] += 0.03;
+        if (positions[i * 3 + 1] > 2) {
+          positions[i * 3 + 1] = -2;
+        }
+        positions[i * 3] = Math.sin(time + i * 0.1) * 0.15;
+        positions[i * 3 + 2] = Math.cos(time + i * 0.1) * 0.15;
+      }
+
+      meshRef.current.geometry.attributes.position.needsUpdate = true;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={0.3} floatIntensity={1}>
-      <mesh ref={meshRef} position={position}>
-        {shape === 'sphere' && <sphereGeometry args={[0.06, 16, 16]} />}
-        {shape === 'cube' && <boxGeometry args={[0.1, 0.1, 0.1]} />}
-        {shape === 'octahedron' && <octahedronGeometry args={[0.07]} />}
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={1.2}
-          toneMapped={false}
+    <points ref={meshRef} position={position}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={particleCount}
+          array={particles}
+          itemSize={3}
         />
-      </mesh>
-    </Float>
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.05}
+        color={color}
+        transparent
+        opacity={0.9}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
   );
 }
 
-// Desk platform
-function Desk({ isDark }: { isDark: boolean }) {
-  return (
-    <group position={[0, -0.5, 0]}>
-      {/* Desk surface */}
-      <RoundedBox args={[3, 0.08, 1.5]} radius={0.02} smoothness={4} receiveShadow castShadow>
-        <meshStandardMaterial
-          color={isDark ? "#3d2817" : "#92673d"}
-          roughness={0.7}
-          metalness={0.1}
-        />
-      </RoundedBox>
+// Glowing central orb
+function CentralOrb() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
 
-      {/* Desk legs */}
-      {[[-1.3, -0.4, 0.6], [1.3, -0.4, 0.6], [-1.3, -0.4, -0.6], [1.3, -0.4, -0.6]].map((pos, i) => (
-        <mesh key={i} position={pos as [number, number, number]} castShadow>
-          <boxGeometry args={[0.08, 0.8, 0.08]} />
-          <meshStandardMaterial color={isDark ? "#2d2017" : "#6b4423"} roughness={0.8} />
-        </mesh>
-      ))}
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    if (meshRef.current) {
+      meshRef.current.rotation.y = time * 0.2;
+      meshRef.current.rotation.x = time * 0.1;
+    }
+    if (glowRef.current) {
+      glowRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.1);
+    }
+  });
+
+  return (
+    <group position={[0, 0, 0]}>
+      {/* Inner core */}
+      <mesh ref={meshRef}>
+        <icosahedronGeometry args={[0.4, 2]} />
+        <meshBasicMaterial
+          color="#8b5cf6"
+          wireframe
+          transparent
+          opacity={0.8}
+        />
+      </mesh>
+
+      {/* Outer glow */}
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshBasicMaterial
+          color="#8b5cf6"
+          transparent
+          opacity={0.15}
+        />
+      </mesh>
+
+      {/* Bright center */}
+      <mesh>
+        <sphereGeometry args={[0.2, 32, 32]} />
+        <meshBasicMaterial color="#c4b5fd" />
+      </mesh>
     </group>
   );
 }
 
-// Main workspace scene
-function WorkspaceScene({ isDark }: { isDark: boolean }) {
+// Orbiting rings
+function OrbitRing({ radius, speed, color, tilt }: { radius: number, speed: number, color: string, tilt: number }) {
+  const ringRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (ringRef.current) {
+      ringRef.current.rotation.z = state.clock.getElapsedTime() * speed;
+    }
+  });
+
   return (
-    <group position={[0, 0, 0]}>
-      {/* Desk */}
-      <Desk isDark={isDark} />
+    <mesh ref={ringRef} rotation={[tilt, 0, 0]}>
+      <torusGeometry args={[radius, 0.01, 8, 100]} />
+      <meshBasicMaterial color={color} transparent opacity={0.5} />
+    </mesh>
+  );
+}
 
-      {/* Monitor */}
-      <Monitor position={[0, 0, -0.2]} isDark={isDark} />
+// Floating data particles in background
+function BackgroundParticles({ count = 500 }: { count?: number }) {
+  const meshRef = useRef<THREE.Points>(null);
 
-      {/* Keyboard */}
-      <Keyboard position={[0, -0.42, 0.25]} isDark={isDark} />
+  const particles = useMemo(() => {
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
 
-      {/* Coffee mug */}
-      <CoffeeMug position={[0.7, -0.38, 0.2]} isDark={isDark} />
+    const colorPalette = [
+      new THREE.Color('#8b5cf6'),
+      new THREE.Color('#3b82f6'),
+      new THREE.Color('#06b6d4'),
+      new THREE.Color('#22c55e'),
+    ];
 
-      {/* Plant */}
-      <Plant position={[-0.8, -0.38, 0.1]} isDark={isDark} />
+    for (let i = 0; i < count; i++) {
+      // Spread particles in a large sphere
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 2 - 1);
+      const radius = 3 + Math.random() * 5;
 
-      {/* Floating tech icons around the scene */}
-      <FloatingIcon position={[-1.5, 0.5, 0.5]} color="#8b5cf6" shape="sphere" />
-      <FloatingIcon position={[1.5, 0.7, 0.3]} color="#3b82f6" shape="cube" />
-      <FloatingIcon position={[-1.2, 0.9, -0.5]} color="#22c55e" shape="octahedron" />
-      <FloatingIcon position={[1.3, 0.4, -0.4]} color="#f59e0b" shape="sphere" />
-      <FloatingIcon position={[0, 1.2, 0]} color="#ec4899" shape="octahedron" />
-      <FloatingIcon position={[-0.8, 0.6, 0.8]} color="#06b6d4" shape="cube" />
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
 
-      {/* Additional floating particles */}
-      {[...Array(15)].map((_, i) => {
+      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      colors[i * 3] = color.r;
+      colors[i * 3 + 1] = color.g;
+      colors[i * 3 + 2] = color.b;
+    }
+
+    return { positions, colors };
+  }, [count]);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.02;
+    }
+  });
+
+  return (
+    <points ref={meshRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={particles.positions}
+          itemSize={3}
+        />
+        <bufferAttribute
+          attach="attributes-color"
+          count={count}
+          array={particles.colors}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.04}
+        vertexColors
+        transparent
+        opacity={0.7}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
+
+// Main abstract data scene
+function AbstractDataScene({ isMobile }: { isMobile: boolean }) {
+  return (
+    <group>
+      {/* Central glowing orb */}
+      <CentralOrb />
+
+      {/* Orbiting rings */}
+      <OrbitRing radius={0.8} speed={0.5} color="#8b5cf6" tilt={0.5} />
+      <OrbitRing radius={1.1} speed={-0.3} color="#3b82f6" tilt={1.2} />
+      <OrbitRing radius={1.4} speed={0.2} color="#06b6d4" tilt={0.8} />
+
+      {/* Neural network connections */}
+      <NeuralNetwork nodeCount={isMobile ? 20 : 35} />
+
+      {/* Particle waves */}
+      <ParticleWave count={isMobile ? 800 : 1500} color="#06b6d4" yOffset={-1} speed={0.8} />
+      <ParticleWave count={isMobile ? 600 : 1200} color="#8b5cf6" yOffset={0.5} speed={0.6} />
+
+      {/* Data streams */}
+      <DataStream position={[-2, 0, -1]} color="#22c55e" />
+      <DataStream position={[2, 0, -1]} color="#3b82f6" />
+      <DataStream position={[0, 0, -2]} color="#8b5cf6" />
+      <DataStream position={[-1.5, 0, 1]} color="#06b6d4" />
+      <DataStream position={[1.5, 0, 1]} color="#f59e0b" />
+
+      {/* Background floating particles */}
+      <BackgroundParticles count={isMobile ? 300 : 600} />
+
+      {/* Floating glowing orbs */}
+      {[...Array(isMobile ? 8 : 15)].map((_, i) => {
         const colors = ['#8b5cf6', '#3b82f6', '#06b6d4', '#22c55e', '#f59e0b'];
         return (
           <Float
-            key={`particle-${i}`}
+            key={i}
             speed={1.5 + (i % 3) * 0.5}
             rotationIntensity={0.2}
-            floatIntensity={1.2}
+            floatIntensity={1}
           >
             <Sphere
-              args={[0.02 + (i % 3) * 0.01, 12, 12]}
+              args={[0.05 + (i % 3) * 0.02, 16, 16]}
               position={[
-                (Math.sin(i * 1.3) * 2),
-                0.5 + (i % 5) * 0.3,
-                (Math.cos(i * 1.7) * 1.5),
+                Math.sin(i * 0.8) * 3,
+                Math.cos(i * 0.5) * 1.5,
+                Math.cos(i * 0.8) * 3,
               ]}
             >
-              <meshStandardMaterial
+              <meshBasicMaterial
                 color={colors[i % colors.length]}
-                emissive={colors[i % colors.length]}
-                emissiveIntensity={1.5}
                 transparent
-                opacity={0.8}
-                toneMapped={false}
+                opacity={0.9}
               />
             </Sphere>
           </Float>
@@ -314,8 +440,7 @@ export default function Scene3D() {
   return (
     <div className="h-full w-full">
       <Canvas
-        camera={{ position: [0, 1.5, 4], fov: 45 }}
-        shadows={!isMobile}
+        camera={{ position: [0, 0, 5], fov: 60 }}
         dpr={isMobile ? [1, 1] : [1, 2]}
         gl={{ antialias: !isMobile, alpha: true, powerPreference: 'high-performance' }}
         className="cursor-grab active:cursor-grabbing"
@@ -323,68 +448,38 @@ export default function Scene3D() {
         performance={{ min: 0.5 }}
       >
         <Suspense fallback={null}>
-          {/* Bright ambient light */}
-          <ambientLight intensity={isDark ? 0.4 : 0.7} color={isDark ? "#b8c5d6" : "#ffffff"} />
+          {/* Subtle ambient light */}
+          <ambientLight intensity={0.2} />
 
-          {/* Main directional light */}
-          <directionalLight
-            position={[5, 8, 5]}
-            intensity={isDark ? 1.5 : 2.2}
-            castShadow
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            shadow-camera-far={50}
-            shadow-camera-left={-10}
-            shadow-camera-right={10}
-            shadow-camera-top={10}
-            shadow-camera-bottom={-10}
-            color={isDark ? "#e6f0ff" : "#fff5e6"}
+          {/* Point lights for glow effect */}
+          <pointLight position={[0, 0, 0]} intensity={2} color="#8b5cf6" distance={5} decay={2} />
+          <pointLight position={[2, 2, 2]} intensity={1} color="#3b82f6" distance={8} decay={2} />
+          <pointLight position={[-2, -1, 2]} intensity={0.8} color="#06b6d4" distance={6} decay={2} />
+
+          {/* Stars background */}
+          <Stars
+            radius={80}
+            depth={50}
+            count={isMobile ? 2000 : 5000}
+            factor={4}
+            saturation={0}
+            fade
+            speed={0.5}
           />
 
-          {/* Fill light from behind */}
-          <directionalLight
-            position={[-3, 2, -3]}
-            intensity={isDark ? 0.5 : 0.8}
-            color="#94a3b8"
-          />
-
-          {/* Accent lights */}
-          <pointLight position={[-3, 3, 2]} intensity={isDark ? 0.8 : 0.5} color="#8b5cf6" distance={10} decay={2} />
-          <pointLight position={[3, 2, 2]} intensity={isDark ? 0.6 : 0.4} color="#3b82f6" distance={10} decay={2} />
-
-          {/* Screen glow */}
-          <pointLight position={[0, 0.5, 0.5]} intensity={0.8} color="#3b82f6" distance={3} decay={2} />
-
-          {/* Stars - only in dark mode */}
-          {isDark && (
-            <Stars
-              radius={50}
-              depth={50}
-              count={isMobile ? 1500 : 4000}
-              factor={4}
-              saturation={0}
-              fade
-              speed={1}
-            />
-          )}
-
-          {/* Main workspace scene */}
-          <WorkspaceScene isDark={isDark} />
-
-          {/* Subtle fog */}
-          <fog attach="fog" args={[isDark ? '#0f172a' : '#f1f5f9', 8, 20]} />
+          {/* Main abstract scene */}
+          <AbstractDataScene isMobile={isMobile} />
 
           {/* Camera controls */}
           <OrbitControls
             enableZoom={false}
             enablePan={false}
             minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 2.2}
+            maxPolarAngle={Math.PI - Math.PI / 4}
             autoRotate
-            autoRotateSpeed={isMobile ? 0.4 : 0.6}
+            autoRotateSpeed={isMobile ? 0.3 : 0.5}
             dampingFactor={0.05}
             enableDamping
-            touches={{ ONE: 0, TWO: 0 }}
           />
         </Suspense>
       </Canvas>
