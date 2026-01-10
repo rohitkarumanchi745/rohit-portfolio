@@ -151,7 +151,7 @@ function getSmartResponse(message: string): string {
   }
 
   // Default
-  return "I can help you learn more about Rohit's experience in data engineering, ML, and full-stack development. Try asking about:\n• His core strengths and expertise\n• The Nava dating app project\n• His work at Neiman Marcus\n• His education and background\n• Specific technologies (Kafka, Spark, React Native, PyTorch, etc.)\n• How to contact him";
+  return "Rohit Karumanchi is a Software Engineer (Full Stack + Data) currently at Neiman Marcus Group. I can help you learn more about his experience in data engineering, ML, and full-stack development. Try asking about:\n• His core strengths and expertise\n• The Nava dating app project\n• His work at Neiman Marcus\n• His education and background\n• Specific technologies (Kafka, Spark, React Native, PyTorch, etc.)\n• How to contact him";
 }
 
 export async function POST(req: Request) {
