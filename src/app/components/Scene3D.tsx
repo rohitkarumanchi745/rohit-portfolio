@@ -4,446 +4,260 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Float, Sphere, RoundedBox } from '@react-three/drei';
 import { Suspense, useRef, useState, useEffect } from 'react';
 
-// Animated typing cursor on laptop screen
-function TypingCursor() {
-  const cursorRef = useRef<any>(null);
+// Glowing Monitor/Screen component
+function Monitor({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
+  const screenRef = useRef<any>(null);
 
   useFrame((state) => {
-    if (cursorRef.current) {
-      cursorRef.current.material.opacity = Math.sin(state.clock.getElapsedTime() * 4) > 0 ? 1 : 0;
+    if (screenRef.current) {
+      screenRef.current.material.emissiveIntensity = 0.6 + Math.sin(state.clock.getElapsedTime() * 2) * 0.2;
     }
   });
 
   return (
-    <mesh ref={cursorRef} position={[0.3, 0.02, 0.01]}>
-      <boxGeometry args={[0.02, 0.08, 0.001]} />
-      <meshBasicMaterial color="#00ff00" transparent opacity={1} />
-    </mesh>
-  );
-}
+    <group position={position}>
+      {/* Monitor stand base */}
+      <mesh position={[0, -0.4, 0]} castShadow>
+        <cylinderGeometry args={[0.25, 0.3, 0.05, 32]} />
+        <meshStandardMaterial color="#4a5568" metalness={0.8} roughness={0.2} />
+      </mesh>
 
-// Floating tech shape component (brackets, cubes, etc.)
-function FloatingTechShape({ position, shape, color, speed = 1 }: { position: [number, number, number], shape: string, color: string, speed?: number }) {
-  const meshRef = useRef<any>(null);
+      {/* Monitor stand pole */}
+      <mesh position={[0, -0.2, 0]} castShadow>
+        <cylinderGeometry args={[0.04, 0.04, 0.35, 16]} />
+        <meshStandardMaterial color="#4a5568" metalness={0.8} roughness={0.2} />
+      </mesh>
 
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = state.clock.getElapsedTime() * speed * 0.5;
-      meshRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * speed * 0.3) * 0.2;
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.getElapsedTime() * speed) * 0.15;
-    }
-  });
+      {/* Monitor frame */}
+      <RoundedBox args={[1.2, 0.75, 0.05]} radius={0.02} smoothness={4} position={[0, 0.15, 0]} castShadow>
+        <meshStandardMaterial color="#1a1a2e" metalness={0.5} roughness={0.3} />
+      </RoundedBox>
 
-  // Different shapes for different tech concepts
-  const renderShape = () => {
-    switch (shape) {
-      case 'brackets': // Code brackets < >
-        return (
-          <group>
-            <mesh position={[-0.08, 0, 0]} rotation={[0, 0, Math.PI / 6]}>
-              <boxGeometry args={[0.02, 0.15, 0.02]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
-            <mesh position={[-0.05, 0.06, 0]} rotation={[0, 0, -Math.PI / 6]}>
-              <boxGeometry args={[0.02, 0.08, 0.02]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
-            <mesh position={[0.08, 0, 0]} rotation={[0, 0, -Math.PI / 6]}>
-              <boxGeometry args={[0.02, 0.15, 0.02]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
-            <mesh position={[0.05, 0.06, 0]} rotation={[0, 0, Math.PI / 6]}>
-              <boxGeometry args={[0.02, 0.08, 0.02]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
-          </group>
-        );
-      case 'cube': // Data cube
-        return (
-          <mesh>
-            <boxGeometry args={[0.12, 0.12, 0.12]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.8} toneMapped={false} wireframe />
-          </mesh>
-        );
-      case 'ring': // Processing ring
-        return (
-          <mesh>
-            <torusGeometry args={[0.08, 0.02, 8, 16]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-          </mesh>
-        );
-      case 'diamond': // Database
-        return (
-          <mesh rotation={[0, 0, Math.PI / 4]}>
-            <octahedronGeometry args={[0.08]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.8} toneMapped={false} />
-          </mesh>
-        );
-      case 'pyramid': // Cloud/Infrastructure
-        return (
-          <mesh>
-            <tetrahedronGeometry args={[0.1]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.8} toneMapped={false} />
-          </mesh>
-        );
-      case 'cross': // Plus/API
-        return (
-          <group>
-            <mesh>
-              <boxGeometry args={[0.15, 0.03, 0.03]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
-            <mesh>
-              <boxGeometry args={[0.03, 0.15, 0.03]} />
-              <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-            </mesh>
-          </group>
-        );
-      default:
-        return (
-          <Sphere args={[0.06, 16, 16]}>
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1} toneMapped={false} />
-          </Sphere>
-        );
-    }
-  };
+      {/* Screen with glow */}
+      <mesh ref={screenRef} position={[0, 0.15, 0.03]}>
+        <planeGeometry args={[1.1, 0.65]} />
+        <meshStandardMaterial
+          color={isDark ? "#1e3a5f" : "#e0f2fe"}
+          emissive="#3b82f6"
+          emissiveIntensity={0.6}
+        />
+      </mesh>
 
-  return (
-    <group ref={meshRef} position={position}>
-      {renderShape()}
+      {/* Code lines on screen */}
+      {[...Array(6)].map((_, i) => (
+        <mesh key={`line-${i}`} position={[-0.35 + (i % 2) * 0.1, 0.32 - i * 0.09, 0.04]}>
+          <boxGeometry args={[0.25 + (i % 3) * 0.15, 0.025, 0.001]} />
+          <meshBasicMaterial
+            color={['#22c55e', '#3b82f6', '#a855f7', '#f59e0b', '#ec4899', '#06b6d4'][i]}
+          />
+        </mesh>
+      ))}
     </group>
   );
 }
 
-// Animated Laptop component
-function Laptop({ isDark }: { isDark: boolean }) {
-  const screenRef = useRef<any>(null);
-
-  useFrame((state) => {
-    // Subtle screen glow pulse
-    if (screenRef.current) {
-      screenRef.current.material.emissiveIntensity = 0.3 + Math.sin(state.clock.getElapsedTime() * 2) * 0.1;
-    }
-  });
-
-  const bodyColor = isDark ? "#1a1a2e" : "#2d3748";
-  const keyboardColor = isDark ? "#0f0f1a" : "#1a202c";
-
+// Keyboard component
+function Keyboard({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
   return (
-    <group position={[0, 0.1, 0.3]} rotation={[0.1, 0, 0]}>
-      {/* Laptop base */}
-      <RoundedBox args={[1.4, 0.06, 0.9]} radius={0.02} smoothness={4} position={[0, 0, 0]} castShadow>
-        <meshStandardMaterial color={bodyColor} metalness={0.8} roughness={0.3} />
+    <group position={position}>
+      {/* Keyboard base */}
+      <RoundedBox args={[0.9, 0.04, 0.35]} radius={0.01} smoothness={4} castShadow>
+        <meshStandardMaterial color={isDark ? "#2d3748" : "#e2e8f0"} metalness={0.3} roughness={0.6} />
       </RoundedBox>
 
-      {/* Keyboard area */}
-      <mesh position={[0, 0.035, 0.05]} castShadow>
-        <boxGeometry args={[1.2, 0.01, 0.6]} />
-        <meshStandardMaterial color={keyboardColor} roughness={0.9} />
-      </mesh>
-
-      {/* Keyboard keys */}
+      {/* Keys */}
       {[...Array(4)].map((_, row) => (
-        [...Array(10)].map((_, col) => (
+        [...Array(12)].map((_, col) => (
           <mesh
             key={`key-${row}-${col}`}
-            position={[-0.5 + col * 0.11, 0.045, -0.15 + row * 0.12]}
+            position={[-0.38 + col * 0.065, 0.025, -0.12 + row * 0.07]}
             castShadow
           >
-            <boxGeometry args={[0.08, 0.015, 0.08]} />
+            <boxGeometry args={[0.05, 0.015, 0.05]} />
             <meshStandardMaterial
-              color={isDark ? "#252540" : "#374151"}
+              color={isDark ? "#4a5568" : "#cbd5e1"}
               roughness={0.7}
             />
           </mesh>
         ))
       ))}
-
-      {/* Trackpad */}
-      <mesh position={[0, 0.04, 0.32]} castShadow>
-        <boxGeometry args={[0.4, 0.005, 0.25]} />
-        <meshStandardMaterial color={isDark ? "#1f1f35" : "#4a5568"} roughness={0.5} metalness={0.2} />
-      </mesh>
-
-      {/* Screen (lid) */}
-      <group position={[0, 0.45, -0.42]} rotation={[-0.3, 0, 0]}>
-        {/* Screen frame */}
-        <RoundedBox args={[1.4, 0.9, 0.04]} radius={0.02} smoothness={4} castShadow>
-          <meshStandardMaterial color={bodyColor} metalness={0.8} roughness={0.3} />
-        </RoundedBox>
-
-        {/* Screen display */}
-        <mesh ref={screenRef} position={[0, 0, 0.025]}>
-          <planeGeometry args={[1.25, 0.75]} />
-          <meshStandardMaterial
-            color={isDark ? "#0a0a15" : "#1e293b"}
-            emissive="#3b82f6"
-            emissiveIntensity={0.3}
-          />
-        </mesh>
-
-        {/* Code lines on screen */}
-        {[...Array(8)].map((_, i) => (
-          <mesh key={`line-${i}`} position={[-0.4 + (i % 3) * 0.1, 0.25 - i * 0.08, 0.03]}>
-            <boxGeometry args={[0.3 + Math.random() * 0.4, 0.025, 0.001]} />
-            <meshBasicMaterial
-              color={['#22c55e', '#3b82f6', '#a855f7', '#f59e0b'][i % 4]}
-              transparent
-              opacity={0.9}
-            />
-          </mesh>
-        ))}
-
-        {/* Typing cursor */}
-        <TypingCursor />
-
-        {/* Camera dot */}
-        <mesh position={[0, 0.4, 0.025]}>
-          <circleGeometry args={[0.015, 16]} />
-          <meshBasicMaterial color="#1f2937" />
-        </mesh>
-      </group>
     </group>
   );
 }
 
-// Server Rack component
-function ServerRack({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
-  const lightsRef = useRef<any[]>([]);
-
-  useFrame((state) => {
-    lightsRef.current.forEach((light, i) => {
-      if (light) {
-        const blinkSpeed = 2 + i * 0.5;
-        light.material.emissiveIntensity = Math.sin(state.clock.getElapsedTime() * blinkSpeed + i) > 0.3 ? 1.5 : 0.3;
-      }
-    });
-  });
-
-  const rackColor = isDark ? "#1a1a2e" : "#374151";
-
+// Coffee Mug
+function CoffeeMug({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
   return (
     <group position={position}>
-      {/* Main rack body */}
-      <RoundedBox args={[0.5, 1.2, 0.4]} radius={0.02} smoothness={4} castShadow>
-        <meshStandardMaterial color={rackColor} metalness={0.7} roughness={0.4} />
-      </RoundedBox>
+      {/* Mug body */}
+      <mesh castShadow>
+        <cylinderGeometry args={[0.08, 0.07, 0.15, 24]} />
+        <meshStandardMaterial color={isDark ? "#7c3aed" : "#8b5cf6"} roughness={0.4} />
+      </mesh>
 
-      {/* Server units */}
-      {[...Array(5)].map((_, i) => (
-        <group key={`server-${i}`} position={[0, 0.4 - i * 0.22, 0.21]}>
-          {/* Server face */}
-          <mesh castShadow>
-            <boxGeometry args={[0.44, 0.18, 0.02]} />
-            <meshStandardMaterial color={isDark ? "#252540" : "#4b5563"} metalness={0.5} roughness={0.5} />
+      {/* Handle */}
+      <mesh position={[0.1, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+        <torusGeometry args={[0.045, 0.015, 8, 16, Math.PI]} />
+        <meshStandardMaterial color={isDark ? "#7c3aed" : "#8b5cf6"} roughness={0.4} />
+      </mesh>
+
+      {/* Coffee surface */}
+      <mesh position={[0, 0.06, 0]}>
+        <circleGeometry args={[0.065, 24]} />
+        <meshStandardMaterial color="#4a3728" />
+      </mesh>
+
+      {/* Steam particles */}
+      {[...Array(3)].map((_, i) => (
+        <Float key={i} speed={2} floatIntensity={0.5}>
+          <mesh position={[-0.02 + i * 0.02, 0.12 + i * 0.03, 0]}>
+            <sphereGeometry args={[0.008, 8, 8]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.4} />
           </mesh>
-
-          {/* Status lights */}
-          {[...Array(3)].map((_, j) => (
-            <mesh
-              key={`light-${i}-${j}`}
-              position={[-0.15 + j * 0.08, 0.05, 0.015]}
-              ref={(el) => { if (el) lightsRef.current[i * 3 + j] = el; }}
-            >
-              <circleGeometry args={[0.012, 8]} />
-              <meshStandardMaterial
-                color={['#22c55e', '#f59e0b', '#3b82f6'][j]}
-                emissive={['#22c55e', '#f59e0b', '#3b82f6'][j]}
-                emissiveIntensity={1}
-                toneMapped={false}
-              />
-            </mesh>
-          ))}
-
-          {/* Ventilation slots */}
-          {[...Array(6)].map((_, j) => (
-            <mesh key={`vent-${i}-${j}`} position={[0.05 + j * 0.04, -0.02, 0.015]}>
-              <boxGeometry args={[0.02, 0.06, 0.005]} />
-              <meshStandardMaterial color="#0a0a15" />
-            </mesh>
-          ))}
-        </group>
+        </Float>
       ))}
     </group>
   );
 }
 
-// Floating Data Orb
-function DataOrb({ position, color, size = 0.1 }: { position: [number, number, number], color: string, size?: number }) {
-  const orbRef = useRef<any>(null);
-  const ringRef = useRef<any>(null);
+// Plant pot for decoration
+function Plant({ position, isDark }: { position: [number, number, number], isDark: boolean }) {
+  return (
+    <group position={position}>
+      {/* Pot */}
+      <mesh castShadow>
+        <cylinderGeometry args={[0.08, 0.06, 0.12, 16]} />
+        <meshStandardMaterial color="#d97706" roughness={0.8} />
+      </mesh>
+
+      {/* Soil */}
+      <mesh position={[0, 0.05, 0]}>
+        <circleGeometry args={[0.07, 16]} />
+        <meshStandardMaterial color="#4a3728" />
+      </mesh>
+
+      {/* Plant leaves */}
+      {[...Array(5)].map((_, i) => {
+        const angle = (i / 5) * Math.PI * 2;
+        return (
+          <mesh
+            key={i}
+            position={[Math.cos(angle) * 0.03, 0.12 + i * 0.02, Math.sin(angle) * 0.03]}
+            rotation={[0.3 + i * 0.1, angle, 0.2]}
+            castShadow
+          >
+            <sphereGeometry args={[0.04, 8, 8]} />
+            <meshStandardMaterial color="#22c55e" roughness={0.8} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+// Floating tech icons (simple glowing shapes)
+function FloatingIcon({ position, color, shape }: { position: [number, number, number], color: string, shape: 'sphere' | 'cube' | 'octahedron' }) {
+  const meshRef = useRef<any>(null);
 
   useFrame((state) => {
-    if (orbRef.current) {
-      orbRef.current.rotation.y = state.clock.getElapsedTime() * 0.5;
-    }
-    if (ringRef.current) {
-      ringRef.current.rotation.x = state.clock.getElapsedTime() * 2;
-      ringRef.current.rotation.z = state.clock.getElapsedTime() * 1.5;
+    if (meshRef.current) {
+      meshRef.current.rotation.y = state.clock.getElapsedTime() * 0.5;
+      meshRef.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.3) * 0.2;
     }
   });
 
   return (
-    <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-      <group ref={orbRef} position={position}>
-        {/* Core orb */}
-        <Sphere args={[size, 32, 32]}>
-          <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={1.5}
-            transparent
-            opacity={0.9}
-            toneMapped={false}
-          />
-        </Sphere>
-
-        {/* Orbiting ring */}
-        <mesh ref={ringRef}>
-          <torusGeometry args={[size * 1.5, size * 0.1, 8, 32]} />
-          <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={0.8}
-            transparent
-            opacity={0.6}
-            toneMapped={false}
-          />
-        </mesh>
-      </group>
+    <Float speed={2} rotationIntensity={0.3} floatIntensity={1}>
+      <mesh ref={meshRef} position={position}>
+        {shape === 'sphere' && <sphereGeometry args={[0.06, 16, 16]} />}
+        {shape === 'cube' && <boxGeometry args={[0.1, 0.1, 0.1]} />}
+        {shape === 'octahedron' && <octahedronGeometry args={[0.07]} />}
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={1.2}
+          toneMapped={false}
+        />
+      </mesh>
     </Float>
   );
 }
 
-// Circuit Board Platform
-function CircuitPlatform({ isDark }: { isDark: boolean }) {
-  const platformColor = isDark ? "#0f172a" : "#1e293b";
-  const circuitColor = isDark ? "#22c55e" : "#10b981";
-
+// Desk platform
+function Desk({ isDark }: { isDark: boolean }) {
   return (
-    <group position={[0, -0.8, 0]}>
-      {/* Main platform */}
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[3.5, 64]} />
+    <group position={[0, -0.5, 0]}>
+      {/* Desk surface */}
+      <RoundedBox args={[3, 0.08, 1.5]} radius={0.02} smoothness={4} receiveShadow castShadow>
         <meshStandardMaterial
-          color={platformColor}
-          metalness={0.3}
+          color={isDark ? "#3d2817" : "#92673d"}
           roughness={0.7}
+          metalness={0.1}
         />
-      </mesh>
+      </RoundedBox>
 
-      {/* Circuit traces */}
-      {[...Array(12)].map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2;
-        const length = 1.5 + Math.random() * 1.5;
-        return (
-          <mesh
-            key={`trace-${i}`}
-            position={[Math.cos(angle) * 1.5, -0.79, Math.sin(angle) * 1.5]}
-            rotation={[-Math.PI / 2, 0, angle]}
-          >
-            <boxGeometry args={[0.03, length, 0.005]} />
-            <meshStandardMaterial
-              color={circuitColor}
-              emissive={circuitColor}
-              emissiveIntensity={isDark ? 0.5 : 0.3}
-            />
-          </mesh>
-        );
-      })}
-
-      {/* Circuit nodes */}
-      {[...Array(8)].map((_, i) => {
-        const angle = (i / 8) * Math.PI * 2;
-        const radius = 2 + (i % 2) * 0.8;
-        return (
-          <mesh
-            key={`node-${i}`}
-            position={[Math.cos(angle) * radius, -0.78, Math.sin(angle) * radius]}
-          >
-            <cylinderGeometry args={[0.08, 0.08, 0.02, 16]} />
-            <meshStandardMaterial
-              color={circuitColor}
-              emissive={circuitColor}
-              emissiveIntensity={isDark ? 0.8 : 0.4}
-              metalness={0.5}
-            />
-          </mesh>
-        );
-      })}
+      {/* Desk legs */}
+      {[[-1.3, -0.4, 0.6], [1.3, -0.4, 0.6], [-1.3, -0.4, -0.6], [1.3, -0.4, -0.6]].map((pos, i) => (
+        <mesh key={i} position={pos as [number, number, number]} castShadow>
+          <boxGeometry args={[0.08, 0.8, 0.08]} />
+          <meshStandardMaterial color={isDark ? "#2d2017" : "#6b4423"} roughness={0.8} />
+        </mesh>
+      ))}
     </group>
   );
 }
 
-// Tech Stack Icons floating around
-function TechIcons() {
-  const techShapes = [
-    { shape: 'brackets', color: '#f59e0b', position: [-2, 1.2, 1] as [number, number, number], speed: 1.2 },
-    { shape: 'cube',     color: '#3b82f6', position: [2.2, 0.8, 0.5] as [number, number, number], speed: 0.8 },
-    { shape: 'ring',     color: '#22c55e', position: [-1.8, 0.5, -1.5] as [number, number, number], speed: 1.5 },
-    { shape: 'diamond',  color: '#a855f7', position: [1.5, 1.5, -1] as [number, number, number], speed: 1.0 },
-    { shape: 'pyramid',  color: '#ec4899', position: [-2.5, 1, -0.5] as [number, number, number], speed: 1.3 },
-    { shape: 'cross',    color: '#06b6d4', position: [2.5, 1.2, -0.8] as [number, number, number], speed: 0.9 },
-  ];
-
+// Main workspace scene
+function WorkspaceScene({ isDark }: { isDark: boolean }) {
   return (
-    <>
-      {techShapes.map((item, i) => (
-        <FloatingTechShape key={i} {...item} />
-      ))}
-    </>
-  );
-}
+    <group position={[0, 0, 0]}>
+      {/* Desk */}
+      <Desk isDark={isDark} />
 
-// Main Tech Scene
-function TechScene({ isDark }: { isDark: boolean }) {
-  return (
-    <group position={[0, -0.2, 0]}>
-      {/* Circuit board platform */}
-      <CircuitPlatform isDark={isDark} />
+      {/* Monitor */}
+      <Monitor position={[0, 0, -0.2]} isDark={isDark} />
 
-      {/* Main laptop */}
-      <Laptop isDark={isDark} />
+      {/* Keyboard */}
+      <Keyboard position={[0, -0.42, 0.25]} isDark={isDark} />
 
-      {/* Server racks */}
-      <ServerRack position={[-1.8, -0.2, -0.5]} isDark={isDark} />
-      <ServerRack position={[1.8, -0.2, -0.5]} isDark={isDark} />
+      {/* Coffee mug */}
+      <CoffeeMug position={[0.7, -0.38, 0.2]} isDark={isDark} />
 
-      {/* Floating data orbs */}
-      <DataOrb position={[-1.2, 0.8, 0.8]} color="#8b5cf6" size={0.08} />
-      <DataOrb position={[1.3, 1, 0.6]} color="#3b82f6" size={0.1} />
-      <DataOrb position={[0, 1.5, -0.5]} color="#06b6d4" size={0.07} />
-      <DataOrb position={[-0.8, 1.2, -0.8]} color="#22c55e" size={0.06} />
-      <DataOrb position={[0.9, 0.6, -1]} color="#f59e0b" size={0.09} />
+      {/* Plant */}
+      <Plant position={[-0.8, -0.38, 0.1]} isDark={isDark} />
 
-      {/* Floating code symbols */}
-      <TechIcons />
+      {/* Floating tech icons around the scene */}
+      <FloatingIcon position={[-1.5, 0.5, 0.5]} color="#8b5cf6" shape="sphere" />
+      <FloatingIcon position={[1.5, 0.7, 0.3]} color="#3b82f6" shape="cube" />
+      <FloatingIcon position={[-1.2, 0.9, -0.5]} color="#22c55e" shape="octahedron" />
+      <FloatingIcon position={[1.3, 0.4, -0.4]} color="#f59e0b" shape="sphere" />
+      <FloatingIcon position={[0, 1.2, 0]} color="#ec4899" shape="octahedron" />
+      <FloatingIcon position={[-0.8, 0.6, 0.8]} color="#06b6d4" shape="cube" />
 
-      {/* Additional floating orbs for ambiance */}
-      {[...Array(10)].map((_, i) => {
-        const colors = ['#8b5cf6', '#3b82f6', '#06b6d4', '#a855f7', '#22c55e'];
-        const color = colors[i % colors.length];
+      {/* Additional floating particles */}
+      {[...Array(15)].map((_, i) => {
+        const colors = ['#8b5cf6', '#3b82f6', '#06b6d4', '#22c55e', '#f59e0b'];
         return (
           <Float
-            key={`orb-${i}`}
-            speed={1.5 + Math.random() * 2}
-            rotationIntensity={0.3}
-            floatIntensity={1.5}
+            key={`particle-${i}`}
+            speed={1.5 + (i % 3) * 0.5}
+            rotationIntensity={0.2}
+            floatIntensity={1.2}
           >
             <Sphere
-              args={[0.04 + Math.random() * 0.03, 16, 16]}
+              args={[0.02 + (i % 3) * 0.01, 12, 12]}
               position={[
-                (Math.random() - 0.5) * 6,
-                0.5 + Math.random() * 2,
-                (Math.random() - 0.5) * 4,
+                (Math.sin(i * 1.3) * 2),
+                0.5 + (i % 5) * 0.3,
+                (Math.cos(i * 1.7) * 1.5),
               ]}
             >
               <meshStandardMaterial
-                color={color}
-                emissive={color}
-                emissiveIntensity={2}
+                color={colors[i % colors.length]}
+                emissive={colors[i % colors.length]}
+                emissiveIntensity={1.5}
                 transparent
-                opacity={0.9}
+                opacity={0.8}
                 toneMapped={false}
               />
             </Sphere>
@@ -487,10 +301,6 @@ export default function Scene3D() {
     };
   }, []);
 
-  const fogColor = isDark ? '#0f172a' : '#f8fafc';
-  const ambientColor = isDark ? '#b8c5d6' : '#e0e7ff';
-  const sunColor = isDark ? '#e6f0ff' : '#fef3c7';
-
   if (!isReady) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl">
@@ -504,7 +314,7 @@ export default function Scene3D() {
   return (
     <div className="h-full w-full">
       <Canvas
-        camera={{ position: [0, 2.5, 6], fov: 50 }}
+        camera={{ position: [0, 1.5, 4], fov: 45 }}
         shadows={!isMobile}
         dpr={isMobile ? [1, 1] : [1, 2]}
         gl={{ antialias: !isMobile, alpha: true, powerPreference: 'high-performance' }}
@@ -513,12 +323,13 @@ export default function Scene3D() {
         performance={{ min: 0.5 }}
       >
         <Suspense fallback={null}>
-          {/* Lighting */}
-          <ambientLight intensity={isDark ? 0.3 : 0.5} color={ambientColor} />
+          {/* Bright ambient light */}
+          <ambientLight intensity={isDark ? 0.4 : 0.7} color={isDark ? "#b8c5d6" : "#ffffff"} />
 
+          {/* Main directional light */}
           <directionalLight
-            position={[8, 10, 5]}
-            intensity={isDark ? 1.2 : 1.8}
+            position={[5, 8, 5]}
+            intensity={isDark ? 1.5 : 2.2}
             castShadow
             shadow-mapSize-width={2048}
             shadow-mapSize-height={2048}
@@ -527,50 +338,50 @@ export default function Scene3D() {
             shadow-camera-right={10}
             shadow-camera-top={10}
             shadow-camera-bottom={-10}
-            color={sunColor}
+            color={isDark ? "#e6f0ff" : "#fff5e6"}
           />
 
+          {/* Fill light from behind */}
           <directionalLight
-            position={[-5, 3, -5]}
-            intensity={isDark ? 0.4 : 0.6}
-            color="#4f46e5"
+            position={[-3, 2, -3]}
+            intensity={isDark ? 0.5 : 0.8}
+            color="#94a3b8"
           />
 
-          {/* Colored accent lights */}
-          <pointLight position={[-4, 4, -4]} intensity={isDark ? 1.2 : 0.8} color="#8b5cf6" distance={15} decay={2} />
-          <pointLight position={[4, 3, 4]} intensity={isDark ? 0.8 : 0.6} color="#3b82f6" distance={12} decay={2} />
-          <pointLight position={[0, 5, -6]} intensity={isDark ? 0.6 : 0.4} color="#06b6d4" distance={10} decay={2} />
+          {/* Accent lights */}
+          <pointLight position={[-3, 3, 2]} intensity={isDark ? 0.8 : 0.5} color="#8b5cf6" distance={10} decay={2} />
+          <pointLight position={[3, 2, 2]} intensity={isDark ? 0.6 : 0.4} color="#3b82f6" distance={10} decay={2} />
 
-          {/* Screen glow light */}
-          <pointLight position={[0, 0.5, 1]} intensity={0.5} color="#3b82f6" distance={3} decay={2} />
+          {/* Screen glow */}
+          <pointLight position={[0, 0.5, 0.5]} intensity={0.8} color="#3b82f6" distance={3} decay={2} />
 
           {/* Stars - only in dark mode */}
           {isDark && (
             <Stars
-              radius={60}
-              depth={60}
-              count={isMobile ? 2000 : 5000}
-              factor={5}
+              radius={50}
+              depth={50}
+              count={isMobile ? 1500 : 4000}
+              factor={4}
               saturation={0}
               fade
-              speed={1.5}
+              speed={1}
             />
           )}
 
-          {/* Main tech scene */}
-          <TechScene isDark={isDark} />
+          {/* Main workspace scene */}
+          <WorkspaceScene isDark={isDark} />
 
-          {/* Fog for depth */}
-          <fog attach="fog" args={[fogColor, 10, 25]} />
+          {/* Subtle fog */}
+          <fog attach="fog" args={[isDark ? '#0f172a' : '#f1f5f9', 8, 20]} />
 
           {/* Camera controls */}
           <OrbitControls
             enableZoom={false}
             enablePan={false}
             minPolarAngle={Math.PI / 4}
-            maxPolarAngle={Math.PI / 2}
+            maxPolarAngle={Math.PI / 2.2}
             autoRotate
-            autoRotateSpeed={isMobile ? 0.5 : 0.8}
+            autoRotateSpeed={isMobile ? 0.4 : 0.6}
             dampingFactor={0.05}
             enableDamping
             touches={{ ONE: 0, TWO: 0 }}
