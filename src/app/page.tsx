@@ -1,20 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from 'next/dynamic';
-
-// Dynamically import 3D scene - only loads when scrolled into view
-const Scene3D = dynamic(() => import('./components/Scene3D'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 dark:from-blue-500/30 dark:via-purple-500/30 dark:to-pink-500/30 rounded-3xl">
-      <div className="text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
-        <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Loading 3D scene...</p>
-      </div>
-    </div>
-  )
-});
 
 const projects = [
   {
@@ -578,19 +564,8 @@ export default function Home() {
           <div className="absolute -top-20 right-1/4 h-96 w-96 rounded-full bg-blue-600 opacity-20 blur-3xl" />
           <div className="absolute top-40 left-1/2 h-80 w-80 rounded-full bg-violet-600 opacity-15 blur-3xl" />
 
-          <div className="grid gap-8 sm:gap-12 lg:grid-cols-2 lg:gap-8 items-center">
-            {/* Right: 3D Scene */}
-            <div className="relative h-[280px] sm:h-[350px] lg:h-[600px] order-first lg:order-last">
-              <Scene3D />
-              <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 text-center z-10">
-                <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-slate-300/50 dark:border-white/5">
-                  <span className="hidden sm:inline">🖱️ Drag to explore • Auto-rotating</span>
-                  <span className="sm:hidden">👆 Touch to explore</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Left: Text content */}
+          <div className="max-w-3xl mx-auto lg:mx-0">
+            {/* Text content */}
             <div className="relative space-y-5 sm:space-y-8 z-10 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-emerald-400 shadow-lg backdrop-blur-sm mx-auto lg:mx-0">
                 <span className="relative flex h-2 w-2">
