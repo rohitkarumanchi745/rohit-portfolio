@@ -579,9 +579,14 @@ export default function Home() {
                 Rohit Karumanchi
               </h1>
 
-              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-slate-700 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0">
-                AI-focused Software Engineer passionate about building scalable, high-impact data and intelligence platforms.
-              </p>
+              <div className="space-y-3 sm:space-y-4 max-w-2xl mx-auto lg:mx-0">
+                <p className="text-base sm:text-lg md:text-xl leading-relaxed text-slate-700 dark:text-slate-300">
+                  AI-focused Software Engineer passionate about building scalable, high-impact data and intelligence platforms.
+                </p>
+                <p className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400">
+                  I design and build large-scale, high-performance data and AI-adjacent systems at Neiman Marcus, supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML—translating complex business requirements into reliable, production-grade solutions that operate at enterprise scale.
+                </p>
+              </div>
 
               <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-5">
                 {/* Email */}
