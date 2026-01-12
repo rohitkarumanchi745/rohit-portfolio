@@ -580,7 +580,7 @@ export default function Home() {
               </h1>
 
               <p className="text-base sm:text-lg md:text-xl leading-relaxed text-slate-700 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0">
-                Empowering innovation through scalable data platforms, intelligent systems, and next-generation ML solutions that drive real-world impact.
+                AI-focused Software Engineer passionate about building scalable, high-impact data and intelligence platforms.
               </p>
 
               <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-5">
@@ -655,7 +655,7 @@ export default function Home() {
               </div>
 
               <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-200 border-l-4 border-purple-500 pl-3 sm:pl-4 italic">
-                I build scalable data platforms and production-grade backend systems—streaming pipelines, reliability engineering, and ML-enabled products that power real-world business impact.
+                I design and build large-scale, high-performance data and AI-adjacent systems supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML.
               </p>
 
               <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -717,13 +717,13 @@ export default function Home() {
                   <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>Build and operate real-time Kafka streaming + Spark batch pipelines powering order/shipment/fraud analytics at enterprise scale</span>
+                  <span>Design and build large-scale data and AI-adjacent systems supporting customer-facing analytics and operational intelligence</span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
                   <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>Improve system reliability through Prometheus/Grafana monitoring, alerting, SLA tracking, and operational playbooks</span>
+                  <span>Translate complex business requirements into reliable, production-grade solutions operating at enterprise scale</span>
                 </li>
                 <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
                   <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
