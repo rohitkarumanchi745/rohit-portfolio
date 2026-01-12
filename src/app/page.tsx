@@ -581,7 +581,7 @@ export default function Home() {
 
               <div className="max-w-2xl mx-auto lg:mx-0 border-l-4 border-slate-400 dark:border-slate-500 pl-4 sm:pl-6">
                 <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400 italic">
-                  "AI-focused Software Engineer passionate about building scalable, high-impact data and intelligence platforms. I design and build large-scale, high-performance data and AI-adjacent systems at Neiman Marcus, supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML—translating complex business requirements into reliable, production-grade solutions that operate at enterprise scale."
+                  "My passion lies in leveraging technology to address real-world challenges and create meaningful impact. I design and build large-scale, high-performance data and AI systems at Neiman Marcus—supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML, translating complex business requirements into reliable, production-grade solutions at enterprise scale. Whether it's retail, healthcare, or social impact, I'm driven to tackle fresh challenges and contribute to the greater good through technology."
                 </p>
               </div>
 
