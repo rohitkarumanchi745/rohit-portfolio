@@ -581,7 +581,7 @@ export default function Home() {
 
               <div className="max-w-2xl mx-auto lg:mx-0 border-l-4 border-slate-400 dark:border-slate-500 pl-4 sm:pl-6">
                 <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400 italic">
-                  "My passion lies in leveraging technology for social impact and to address real-world challenges. I'm eager to explore new areas and leverage my skills to make a meaningful impact in diverse fields. Whether it's healthcare, social impact, or any other domain, I'm excited to tackle fresh challenges and contribute to the greater good through technology."
+                  "My passion lies in leveraging technology for social impact and to address real-world challenges. I thrive in entrepreneurial environments—whether building with founders, collaborating with domain experts, or shipping products that scale. I'm eager to explore new areas and make meaningful impact across healthcare, fintech, social good, or the next big thing. Let's build something that matters."
                 </p>
               </div>
 
