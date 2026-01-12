@@ -575,16 +575,13 @@ export default function Home() {
                 <span>Open to Data / Backend / ML Platform roles</span>
               </div>
 
-              <h1 className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-transparent">
-                Rohit Karumanchi
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">
+                Hello, I'm Rohit
               </h1>
 
-              <div className="space-y-3 sm:space-y-4 max-w-2xl mx-auto lg:mx-0">
-                <p className="text-base sm:text-lg md:text-xl leading-relaxed text-slate-700 dark:text-slate-300">
-                  AI-focused Software Engineer passionate about building scalable, high-impact data and intelligence platforms.
-                </p>
-                <p className="text-sm sm:text-base leading-relaxed text-slate-600 dark:text-slate-400">
-                  I design and build large-scale, high-performance data and AI-adjacent systems at Neiman Marcus, supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML—translating complex business requirements into reliable, production-grade solutions that operate at enterprise scale.
+              <div className="max-w-2xl mx-auto lg:mx-0 border-l-4 border-slate-400 dark:border-slate-500 pl-4 sm:pl-6">
+                <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400 italic">
+                  "AI-focused Software Engineer passionate about building scalable, high-impact data and intelligence platforms. I design and build large-scale, high-performance data and AI-adjacent systems at Neiman Marcus, supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML—translating complex business requirements into reliable, production-grade solutions that operate at enterprise scale."
                 </p>
               </div>
 
