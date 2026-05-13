@@ -1,0 +1,15 @@
+{
+  "name": "rohit-portfolio-hyperframes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hyperframes compositions for the portfolio site. Renders HTML/CSS/JS into deterministic MP4s consumed by the Next.js app under /public/videos/hyperframes.",
+  "scripts": {
+    "preview": "hyperframes preview compositions",
+    "render:hero": "hyperframes render compositions/hero-intro.html --out ../public/videos/hyperframes/hero-intro.mp4",
+    "render:projects": "hyperframes render compositions/project-reel.html --out ../public/videos/hyperframes/project-reel.mp4",
+    "render:all": "npm run render:hero && npm run render:projects"
+  },
+  "devDependencies": {
+    "hyperframes": "*"
+  }
+}

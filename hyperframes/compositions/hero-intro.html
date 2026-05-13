@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Hero Intro</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; padding: 0; background: #0c0a1a; }
+  #stage {
+    position: relative;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+    color: #f1f5f9;
+    background:
+      radial-gradient(60% 40% at 20% 30%, rgba(139, 92, 246, 0.35), transparent 70%),
+      radial-gradient(50% 50% at 80% 70%, rgba(59, 130, 246, 0.30), transparent 70%),
+      linear-gradient(135deg, #0c0a1a 0%, #1e1b3a 50%, #0c0a1a 100%);
+  }
+
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(139, 92, 246, 0.18) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139, 92, 246, 0.18) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 60%, transparent 100%);
+    animation: gridMove 6s linear forwards;
+  }
+  @keyframes gridMove { from { background-position: 0 0; } to { background-position: 480px 480px; } }
+
+  .blob {
+    position: absolute; border-radius: 9999px; filter: blur(120px); opacity: 0.55;
+  }
+  .blob.a { width: 700px; height: 700px; left: 8%;  top: 10%; background: #7c3aed; animation: drift 6s ease-in-out infinite alternate; }
+  .blob.b { width: 600px; height: 600px; right: 6%; top: 30%; background: #2563eb; animation: drift 6s ease-in-out infinite alternate-reverse; }
+  .blob.c { width: 520px; height: 520px; left: 40%; bottom: -10%; background: #06b6d4; opacity: 0.35; animation: drift 6s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: translate3d(0,0,0) scale(1); } to { transform: translate3d(40px,-30px,0) scale(1.05); } }
+
+  .ring {
+    position: absolute; left: 50%; top: 50%;
+    width: 900px; height: 900px;
+    margin: -450px 0 0 -450px;
+    border-radius: 50%;
+    border: 2px solid rgba(139, 92, 246, 0.25);
+    box-shadow: inset 0 0 80px rgba(139, 92, 246, 0.15);
+    animation: ringSpin 6s linear forwards;
+  }
+  .ring.inner { width: 600px; height: 600px; margin: -300px 0 0 -300px; border-color: rgba(59,130,246,0.3); animation-duration: 4s; }
+  @keyframes ringSpin { from { transform: rotate(0deg); opacity: 0.3; } to { transform: rotate(180deg); opacity: 1; } }
+
+  .name {
+    position: absolute; left: 0; right: 0; top: 38%; text-align: center;
+    font-size: 140px; font-weight: 800; letter-spacing: -0.04em;
+    background: linear-gradient(90deg, #a78bfa 0%, #60a5fa 50%, #a78bfa 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    opacity: 0; animation: rise 1.2s ease-out 0.4s forwards;
+  }
+  .tag {
+    position: absolute; left: 0; right: 0; top: 56%; text-align: center;
+    font-size: 36px; font-weight: 500; color: #cbd5e1; letter-spacing: 0.02em;
+    opacity: 0; animation: rise 1.2s ease-out 1.0s forwards;
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+  .scan {
+    position: absolute; left: -20%; right: -20%; top: 0; height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+    transform: skewX(-20deg);
+    animation: scan 6s linear forwards;
+  }
+  @keyframes scan { from { transform: translateX(-60%) skewX(-20deg); } to { transform: translateX(60%) skewX(-20deg); } }
+</style>
+</head>
+<body>
+  <div id="stage" data-composition-id="hero-intro" data-start="0" data-duration="6" data-width="1920" data-height="1080" data-fps="30">
+    <div class="grid"></div>
+    <div class="blob a"></div>
+    <div class="blob b"></div>
+    <div class="blob c"></div>
+    <div class="ring"></div>
+    <div class="ring inner"></div>
+    <div class="scan"></div>
+    <div class="name">Rohit Karumanchi</div>
+    <div class="tag">Full Stack &middot; Data Engineering &middot; AI</div>
+  </div>
+</body>
+</html>
