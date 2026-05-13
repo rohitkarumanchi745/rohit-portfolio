@@ -16,6 +16,9 @@ const Scene3D = dynamic(() => import('./components/Scene3D'), {
   )
 });
 
+const MotionBackdrop = dynamic(() => import('./components/MotionBackdrop'), { ssr: false });
+const ProjectReel = dynamic(() => import('./components/ProjectReel'), { ssr: false });
+
 const projects = [
   {
     title: "Nava - High-Performance Dating Platform",
@@ -578,7 +581,12 @@ export default function Home() {
           <div className="absolute -top-20 right-1/4 h-96 w-96 rounded-full bg-blue-600 opacity-20 blur-3xl" />
           <div className="absolute top-40 left-1/2 h-80 w-80 rounded-full bg-violet-600 opacity-15 blur-3xl" />
 
-          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          {/* Kling motion backdrop (drops in once /public/videos/kling/hero-backdrop.mp4 exists) */}
+          <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden rounded-3xl">
+            <MotionBackdrop src="/videos/kling/hero-backdrop.mp4" opacity={0.30} />
+          </div>
+
+          <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             {/* Text content */}
             <div className="relative space-y-5 sm:space-y-8 z-10 text-center lg:text-left flex-1">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-emerald-400 shadow-lg backdrop-blur-sm mx-auto lg:mx-0">
@@ -826,6 +834,11 @@ export default function Home() {
           <div className="mb-8 sm:mb-12 text-center px-4">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Projects</h2>
             <p className="mt-3 sm:mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">Projects that show real system thinking: build, ship, operate.</p>
+          </div>
+
+          {/* Hyperframes-rendered project reel (drops in once /public/videos/hyperframes/project-reel.mp4 exists) */}
+          <div className="mb-8 sm:mb-12 aspect-[16/6]">
+            <ProjectReel src="/videos/hyperframes/project-reel.mp4" className="h-full w-full" />
           </div>
 
           <div className="grid gap-6 sm:gap-8">

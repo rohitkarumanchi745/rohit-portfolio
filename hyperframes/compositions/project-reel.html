@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Project Reel</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; padding: 0; background: #0c0a1a; }
+  #stage {
+    position: relative;
+    width: 1920px;
+    height: 720px;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, Segoe UI, sans-serif;
+    color: #f1f5f9;
+    background:
+      radial-gradient(60% 80% at 50% 50%, rgba(139, 92, 246, 0.25), transparent 70%),
+      linear-gradient(135deg, #0c0a1a 0%, #1e1b3a 50%, #0c0a1a 100%);
+  }
+
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 10s linear infinite;
+  }
+  @keyframes gridMove { from { background-position: 0 0; } to { background-position: 60px 60px; } }
+
+  .card {
+    position: absolute; top: 110px; height: 500px; width: 560px;
+    border-radius: 28px;
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    background: linear-gradient(160deg, rgba(124, 58, 237, 0.18), rgba(37, 99, 235, 0.10));
+    box-shadow: 0 30px 80px rgba(0,0,0,0.45), inset 0 0 60px rgba(139,92,246,0.08);
+    padding: 44px;
+    opacity: 0; transform: translateY(40px);
+  }
+  .card .tag {
+    font-size: 18px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #a78bfa; font-weight: 700;
+  }
+  .card h3 {
+    margin: 18px 0 10px; font-size: 56px; font-weight: 800; letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #f9a8d4, #c4b5fd, #93c5fd);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .card p { font-size: 24px; line-height: 1.4; color: #cbd5e1; margin: 0; }
+  .card ul { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+  .card li { font-size: 20px; color: #e2e8f0; padding-left: 28px; position: relative; }
+  .card li::before {
+    content: ""; position: absolute; left: 0; top: 10px; width: 12px; height: 12px;
+    border-radius: 50%; background: linear-gradient(135deg, #a78bfa, #60a5fa);
+    box-shadow: 0 0 12px rgba(167, 139, 250, 0.6);
+  }
+
+  .c1 { left: 80px; animation: cardIn 0.8s ease-out 0.2s forwards, cardOut 0.6s ease-in 3.2s forwards; }
+  .c2 { left: 680px; animation: cardIn 0.8s ease-out 3.4s forwards, cardOut 0.6s ease-in 6.4s forwards; }
+  .c3 { left: 1280px; animation: cardIn 0.8s ease-out 6.6s forwards; }
+
+  @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+  @keyframes cardOut { to { opacity: 0; transform: translateY(-30px); } }
+
+  .header {
+    position: absolute; left: 80px; right: 80px; top: 36px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 22px; color: #94a3b8; letter-spacing: 0.04em;
+  }
+  .header .dot { width: 10px; height: 10px; border-radius: 50%; background: #a78bfa; box-shadow: 0 0 10px #a78bfa; display: inline-block; margin-right: 10px; }
+</style>
+</head>
+<body>
+  <div id="stage" data-composition-id="project-reel" data-start="0" data-duration="10" data-width="1920" data-height="720" data-fps="30">
+    <div class="grid"></div>
+
+    <div class="header">
+      <div><span class="dot"></span>Selected projects</div>
+      <div>rohitkarumanchi.com</div>
+    </div>
+
+    <div class="card c1">
+      <div class="tag">Project 01</div>
+      <h3>Nava</h3>
+      <p>High-performance dating platform.</p>
+      <ul>
+        <li>Rust / Axum / Tokio</li>
+        <li>GraphQL + WebRTC signalling</li>
+        <li>ONNX face + liveness</li>
+        <li>Federated on-device learning</li>
+      </ul>
+    </div>
+
+    <div class="card c2">
+      <div class="tag">Project 02</div>
+      <h3>Amaravati</h3>
+      <p>Smart bicycle platform.</p>
+      <ul>
+        <li>Telemetry pipeline at scale</li>
+        <li>Realtime geo &amp; matching</li>
+        <li>Edge ML inference</li>
+      </ul>
+    </div>
+
+    <div class="card c3">
+      <div class="tag">Project 03</div>
+      <h3>Data Platform</h3>
+      <p>Kafka &middot; Spark &middot; Databricks.</p>
+      <ul>
+        <li>Sub-second ingestion</li>
+        <li>Petabyte-scale analytics</li>
+        <li>AI-assisted decisioning</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
