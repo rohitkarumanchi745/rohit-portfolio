@@ -9,7 +9,7 @@ You are Spuff, Rohit Karumanchi's AI assistant. Answer questions about Rohit's p
 **Email**: rkkarumanchi98@gmail.com
 **GitHub**: https://github.com/rohitkarumanchi745
 **LinkedIn**: https://www.linkedin.com/in/rohit-karumanchi/
-**Education**: Master's in Computer Information Technology and Management, University of Texas at Dallas
+**Education**: Master's in Software Engineering, University of Texas at Dallas
 **Current Role**: Software Engineer (Full Stack + Data) at Neiman Marcus Group (2023-Present)
 **Open to**: Data / Backend / ML Platform roles
 
@@ -145,12 +145,12 @@ function getSmartResponse(message: string): string {
 
   // Education
   if (lowerMsg.includes("education") || lowerMsg.includes("degree") || lowerMsg.includes("university") || lowerMsg.includes("college") || lowerMsg.includes("master") || lowerMsg.includes("school") || lowerMsg.includes("utd") || lowerMsg.includes("ut dallas") || lowerMsg.includes("texas")) {
-    return "Rohit holds a Master's degree in Computer Information Technology and Management from the University of Texas at Dallas (UT Dallas). This graduate program combines technical computer science skills with business management fundamentals, providing him with both deep technical expertise and business acumen—perfect for bridging the gap between engineering and product impact!";
+    return "Rohit holds a Master's degree in Software Engineering from the University of Texas at Dallas (UT Dallas). This graduate program combines technical computer science skills with business management fundamentals, providing him with both deep technical expertise and business acumen—perfect for bridging the gap between engineering and product impact!";
   }
 
   // About/Who
   if (lowerMsg.includes("who") || lowerMsg.includes("about") || lowerMsg.includes("introduce") || lowerMsg.includes("tell me")) {
-    return "Rohit Karumanchi is a Software Engineer (Full Stack + Data) with strong expertise in:\n• Data Engineering - Building production streaming/batch pipelines with Kafka, Spark, Databricks, Snowflake\n• Full Stack Development - FastAPI, GraphQL, React Native, Python, Java, Rust, microservices\n• ML/Computer Vision - PyTorch, CNN models, OpenCV, Federated Learning, on-device ML\n• Cloud & DevOps - Azure, AWS, Kubernetes, Docker, CI/CD, observability\n\nHe holds a Master's in Computer Information Technology and Management from UT Dallas and currently works at Neiman Marcus Group building scalable data platforms and ML-enabled products. Open to Data / Backend / ML Platform roles!\n\nAsk me about his strengths, projects, or specific technologies!";
+    return "Rohit Karumanchi is a Software Engineer (Full Stack + Data) with strong expertise in:\n• Data Engineering - Building production streaming/batch pipelines with Kafka, Spark, Databricks, Snowflake\n• Full Stack Development - FastAPI, GraphQL, React Native, Python, Java, Rust, microservices\n• ML/Computer Vision - PyTorch, CNN models, OpenCV, Federated Learning, on-device ML\n• Cloud & DevOps - Azure, AWS, Kubernetes, Docker, CI/CD, observability\n\nHe holds a Master's in Software Engineering from UT Dallas and currently works at Neiman Marcus Group building scalable data platforms and ML-enabled products. Open to Data / Backend / ML Platform roles!\n\nAsk me about his strengths, projects, or specific technologies!";
   }
 
   // Default

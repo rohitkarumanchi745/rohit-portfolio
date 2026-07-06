@@ -44,7 +44,7 @@ const priorExperience = {
 
 const education = {
   school: "University of Texas at Dallas",
-  degree: "Master's in Computer Information Technology and Management",
+  degree: "Master's in Software Engineering",
   logo: "/UT_Dallas_2_Color_Emblem_-_SVG_Brand_Identity_File.svg.png",
 };
 
@@ -568,7 +568,7 @@ export default function Home() {
                 workflows — where I learned that reliability is a feature users feel.
               </p>
               <p>
-                I hold a Master&apos;s in Computer Information Technology and Management from the{" "}
+                I hold a Master&apos;s in Software Engineering from the{" "}
                 <span className="text-slate-200">University of Texas at Dallas</span>, and I&apos;m
                 driven to explore what&apos;s next in data engineering and AI — whether building with
                 founders, collaborating with domain experts, or shipping products that scale.{" "}
