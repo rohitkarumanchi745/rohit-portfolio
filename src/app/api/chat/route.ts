@@ -145,7 +145,7 @@ function getSmartResponse(message: string): string {
 
   // Education
   if (lowerMsg.includes("education") || lowerMsg.includes("degree") || lowerMsg.includes("university") || lowerMsg.includes("college") || lowerMsg.includes("master") || lowerMsg.includes("school") || lowerMsg.includes("utd") || lowerMsg.includes("ut dallas") || lowerMsg.includes("texas")) {
-    return "Rohit holds a Master's degree in Software Engineering from the University of Texas at Dallas (UT Dallas). This graduate program combines technical computer science skills with business management fundamentals, providing him with both deep technical expertise and business acumen—perfect for bridging the gap between engineering and product impact!";
+    return "Rohit holds a Master's degree in Software Engineering from the University of Texas at Dallas (UT Dallas). The program sharpened his foundations in software architecture, distributed systems, and engineering practice at scale—the backbone of how he builds today!";
   }
 
   // About/Who
