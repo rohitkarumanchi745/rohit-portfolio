@@ -1,18 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import dynamic from "next/dynamic";
 import Image from "next/image";
-
-// Lazy-load the 3D scene
-const Scene3D = dynamic(() => import("./components/Scene3D"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-[#0b0f1a]">
-      <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500 border-r-transparent" />
-    </div>
-  ),
-});
 
 /* ------------------------------------------------------------------ */
 /*  Data                                                                */
@@ -524,8 +513,45 @@ export default function Home() {
           <section id="about" className="reveal scroll-mt-24 pt-16 lg:pt-0">
             <SectionHeader index="01" title="About" />
 
-            <div className="glass mb-8 h-56 overflow-hidden sm:h-64">
-              <Scene3D />
+            <div className="glass mb-8 overflow-hidden !rounded-2xl">
+              {/* terminal chrome */}
+              <div className="flex items-center gap-2 border-b border-white/8 bg-white/[0.03] px-4 py-3">
+                <span className="h-3 w-3 rounded-full bg-[#ff5f57]/80" />
+                <span className="h-3 w-3 rounded-full bg-[#febc2e]/80" />
+                <span className="h-3 w-3 rounded-full bg-[#28c840]/80" />
+                <span className="ml-3 font-mono text-[11px] tracking-wider text-slate-500">rohit@dfw — zsh</span>
+              </div>
+              {/* terminal body */}
+              <div className="space-y-3 p-5 font-mono text-[13px] leading-relaxed sm:p-6">
+                <div>
+                  <span className="text-emerald-400">➜</span> <span className="text-slate-500">~</span>{" "}
+                  <span className="text-slate-300">whoami</span>
+                  <p className="mt-1 text-slate-400">
+                    rohit — software engineer <span className="text-slate-600">(data · backend · AI)</span>
+                  </p>
+                </div>
+                <div>
+                  <span className="text-emerald-400">➜</span> <span className="text-slate-500">~</span>{" "}
+                  <span className="text-slate-300">current --focus</span>
+                  <p className="mt-1 text-violet-300">
+                    [ <span className="text-slate-400">kafka-pipelines</span>,{" "}
+                    <span className="text-slate-400">langgraph-agents</span>,{" "}
+                    <span className="text-slate-400">low-bit-llms</span> ]
+                  </p>
+                </div>
+                <div>
+                  <span className="text-emerald-400">➜</span> <span className="text-slate-500">~</span>{" "}
+                  <span className="text-slate-300">uptime --career</span>
+                  <p className="mt-1 text-slate-400">
+                    shipping @ <span className="text-cyan-300">neiman-marcus-group</span> since 2023 · load avg:{" "}
+                    <span className="text-emerald-400">healthy</span>
+                  </p>
+                </div>
+                <div>
+                  <span className="text-emerald-400">➜</span> <span className="text-slate-500">~</span>{" "}
+                  <span className="cursor-blink text-violet-400">▍</span>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-4 leading-relaxed text-slate-400">
