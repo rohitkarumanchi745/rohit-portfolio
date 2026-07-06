@@ -1,27 +1,67 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import dynamic from 'next/dynamic';
+import { useState, useEffect, useCallback } from "react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 
-// Dynamically import 3D scene - only loads when scrolled into view
-const Scene3D = dynamic(() => import('./components/Scene3D'), {
+// Lazy-load the 3D scene
+const Scene3D = dynamic(() => import("./components/Scene3D"), {
   ssr: false,
   loading: () => (
-    <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 dark:from-blue-500/30 dark:via-purple-500/30 dark:to-pink-500/30 rounded-3xl">
-      <div className="text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-purple-600 border-r-transparent"></div>
-        <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">Loading 3D scene...</p>
-      </div>
+    <div className="flex h-full w-full items-center justify-center rounded-2xl bg-[#0b0f1a]">
+      <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500 border-r-transparent" />
     </div>
-  )
+  ),
 });
 
-const MotionBackdrop = dynamic(() => import('./components/MotionBackdrop'), { ssr: false });
-const ProjectReel = dynamic(() => import('./components/ProjectReel'), { ssr: false });
+/* ------------------------------------------------------------------ */
+/*  Data                                                                */
+/* ------------------------------------------------------------------ */
+
+const navItems = [
+  { id: "about", label: "About" },
+  { id: "experience", label: "Experience" },
+  { id: "projects", label: "Projects" },
+  { id: "stack", label: "Stack" },
+  { id: "contact", label: "Contact" },
+];
+
+const experience = {
+  company: "Neiman Marcus Group",
+  role: "Software Engineer (Full Stack + Data)",
+  period: "2023 — Present",
+  summary:
+    "I design and build large-scale, high-performance data and AI-adjacent systems supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML.",
+  metrics: [
+    { value: "$1.5M+", label: "Shipping Savings", detail: "Real-time Kafka streaming pipelines optimizing carrier selection & route efficiency" },
+    { value: "250%", label: "Efficiency Gain", detail: "Spark/Databricks automation replacing manual ETL with orchestrated data pipelines" },
+    { value: "$5M+", label: "Annual Cost Savings", detail: "ML-powered fraud detection & predictive analytics reducing chargebacks & losses" },
+  ],
+  points: [
+    "Design and build large-scale data and AI-adjacent systems supporting customer-facing analytics and operational intelligence",
+    "Translate complex business requirements into reliable, production-grade solutions operating at enterprise scale",
+    "Partner with stakeholders across business units to translate requirements into scalable, production-grade data products",
+    "Power downstream analytics for fraud detection, demand forecasting, and inventory optimization using ML models",
+  ],
+  stack: ["Java", "Spring Boot", "Kafka", "React Native", "Kubernetes", "AWS", "Terraform", "Python", "TensorFlow", "SageMaker"],
+};
+
+const priorExperience = {
+  company: "NNR Global Logistics",
+  role: "Software / Data Engineering",
+  summary:
+    "Tackled large-scale data challenges and contributed to modernizing pipelines across critical logistics workflows — sharpening the fundamentals of building reliable, scalable systems.",
+};
+
+const education = {
+  school: "University of Texas at Dallas",
+  degree: "Master's in Computer Information Technology and Management",
+  logo: "/UT_Dallas_2_Color_Emblem_-_SVG_Brand_Identity_File.svg.png",
+};
 
 const projects = [
   {
-    title: "Nava - High-Performance Dating Platform",
+    title: "Nava — High-Performance Dating Platform",
     subtitle: "Distributed systems architecture for real-time social connections at scale",
     points: [
       "Rust/Axum backend engineered for 10K+ concurrent connections per node using Tokio async runtime, stateless horizontal scaling with Redis shared state, and SQLx connection pooling with PgBouncer patterns.",
@@ -32,165 +72,194 @@ const projects = [
       "Production infrastructure: Prometheus metrics (latency histograms, error budgets), distributed tracing with correlation IDs, Kubernetes on Docker multi-stage builds, and MCP server for analytics.",
     ],
     metrics: [
-      { value: "10K+", label: "Concurrent Users", detail: "Tokio async runtime" },
-      { value: "<50ms", label: "P99 Latency", detail: "WebSocket pub/sub" },
-      { value: "99.9%", label: "Match Accuracy", detail: "ML-powered scoring" },
+      { value: "10K+", label: "Concurrent Users" },
+      { value: "<50ms", label: "P99 Latency" },
+      { value: "99.9%", label: "Match Accuracy" },
     ],
     stack: ["Rust/Axum", "async-graphql", "WebSocket", "WebRTC", "ONNX Runtime", "Tokio", "SQLx/Postgres", "Redis", "Prometheus", "Docker", "Kubernetes", "React Native", "PyTorch", "OpenCV", "Vector DB", "MCP Server"],
     link: "https://github.com/rohitkarumanchi745/telugu-dating-backend-main",
-    linkText: "Repo",
+    linkText: "Repository",
     featured: true,
+    status: "In Progress — App Store Launch Pending",
   },
   {
     title: "Supply Chain & Inventory Analytics Platform",
     subtitle: "Event-driven inventory tracking with Kafka consumer groups, offset management, and predictive ML models",
     points: [
-      "Built Kafka consumer applications with manual offset commits, partition rebalancing handlers, and dead letter queues for failed message processing across 50+ inventory event topics.",
-      "Implemented exactly-once semantics using Kafka transactions and idempotent producers for critical inventory adjustments, preventing duplicate stock updates across distribution centers.",
-      "Developed ARIMA and Prophet forecasting models for demand prediction, integrated with Airflow DAGs for daily model retraining and feature store updates in Snowflake.",
-      "Created dbt transformation layer with incremental models, snapshot tables for SCD Type 2 tracking of inventory states, and data quality tests with Great Expectations.",
-      "Built circuit breaker patterns for 3PL API integrations using resilience4j, with fallback strategies and bulkhead isolation to prevent cascade failures.",
+      "Kafka consumers with manual offset commits, partition rebalancing handlers, and dead letter queues across 50+ inventory event topics.",
+      "Exactly-once semantics using Kafka transactions and idempotent producers for critical inventory adjustments across distribution centers.",
+      "ARIMA and Prophet forecasting models for demand prediction, integrated with Airflow DAGs for daily retraining and feature store updates in Snowflake.",
+      "dbt transformation layer with incremental models, SCD Type 2 snapshots, and data quality tests with Great Expectations.",
     ],
     metrics: [
-      { value: "50+", label: "Event Topics", detail: "Kafka partitions" },
-      { value: "99.99%", label: "Data Accuracy", detail: "Exactly-once semantics" },
-      { value: "15%", label: "Stockout Reduction", detail: "Prophet forecasting" },
+      { value: "50+", label: "Event Topics" },
+      { value: "99.99%", label: "Data Accuracy" },
+      { value: "15%", label: "Stockout Reduction" },
     ],
-    stack: ["Kafka", "Kafka Streams", "Spark Structured Streaming", "Snowflake", "dbt", "Airflow", "ARIMA/Prophet", "Great Expectations", "Python", "SQL"],
-    link: "#",
-    linkText: "Details",
+    stack: ["Kafka", "Kafka Streams", "Spark", "Snowflake", "dbt", "Airflow", "ARIMA/Prophet", "Python", "SQL"],
+    link: null,
+    linkText: null,
   },
   {
     title: "AI-Powered Order Fulfillment Platform",
     subtitle: "Python microservices with FastAPI, LangGraph agents, and MCP Server for intelligent order orchestration",
     points: [
-      "Built Python FastAPI microservices for order lifecycle management with DynamoDB as primary datastore, using GSI for query patterns and DynamoDB Streams for CDC to downstream analytics systems.",
-      "Implemented LangGraph multi-agent workflows for intelligent order routing, exception handling, and customer communication with stateful graph execution, conditional branching, and human-in-the-loop checkpoints.",
-      "Developed LangChain RAG pipelines for customer support automation, integrating vector stores (Pinecone) for order history retrieval, semantic search across fulfillment docs, and context-aware response generation.",
-      "Built MCP Server integration for real-time tool execution, exposing inventory APIs, shipping calculators, and order status endpoints as callable tools for AI agents with structured input/output schemas.",
-      "Created SLA monitoring with custom Prometheus exporters tracking p50/p95/p99 latencies, agent execution traces via LangSmith, and automated PagerDuty escalations based on error budgets.",
+      "FastAPI microservices for order lifecycle management on DynamoDB, with GSI query patterns and Streams CDC to downstream analytics.",
+      "LangGraph multi-agent workflows for intelligent order routing, exception handling, and customer communication with human-in-the-loop checkpoints.",
+      "LangChain RAG pipelines with Pinecone vector stores for order history retrieval and context-aware support automation.",
+      "MCP Server integration exposing inventory APIs, shipping calculators, and order status endpoints as callable tools for AI agents.",
     ],
     metrics: [
-      { value: "40%", label: "Faster Routing", detail: "LangGraph agents" },
-      { value: "85%", label: "Auto-Resolution", detail: "RAG pipelines" },
-      { value: "<100ms", label: "API Latency", detail: "FastAPI + DynamoDB" },
+      { value: "40%", label: "Faster Routing" },
+      { value: "85%", label: "Auto-Resolution" },
+      { value: "<100ms", label: "API Latency" },
     ],
-    stack: ["Python", "FastAPI", "LangGraph", "LangChain", "MCP Server", "DynamoDB", "Pinecone", "LangSmith", "React Native", "WebSocket", "Prometheus", "Kubernetes"],
-    link: "#",
-    linkText: "Architecture",
+    stack: ["Python", "FastAPI", "LangGraph", "LangChain", "MCP Server", "DynamoDB", "Pinecone", "LangSmith", "Prometheus", "Kubernetes"],
+    link: null,
+    linkText: null,
   },
   {
-    title: "Interactive 3D Portfolio with AI Chatbot (This Site!)",
-    subtitle: "Next.js + Three.js + OpenAI + AWS EC2 - Mobile-first responsive portfolio",
+    title: "Interactive 3D Portfolio with AI Chatbot",
+    subtitle: "This site — Next.js, Three.js, and an OpenAI-powered assistant on AWS",
     points: [
-      "Built full-stack interactive portfolio with Next.js 16, Three.js/React Three Fiber for 3D graphics, featuring custom building model with dynamic lighting, floating tech icons, and dark/light mode adaptation.",
-      "Implemented mobile-first responsive design optimized for iOS, Android, and iPad with hamburger navigation, touch controls, performance optimizations (lazy loading, hardware-accelerated animations, reduced particle counts on mobile), and fast load times under 3s.",
-      "Integrated OpenAI-powered AI chatbot (Spuff) using GPT API for real-time Q&A with streaming responses, and contact form with email validation via Resend API.",
-      "Deployed on AWS EC2 with Nginx reverse proxy, SSL/TLS (Let's Encrypt), CloudFront CDN, Route 53 DNS, CI/CD via GitHub Actions, and PM2 process management.",
-      "System Design: Hybrid SSR/CSR rendering for SEO, BFF pattern with Next.js API routes, lazy-loaded 3D scene with Suspense, hardware-accelerated CSS transforms, CDN edge caching, and zero-downtime deployments.",
+      "Next.js 16 with React Three Fiber 3D graphics, mobile-first responsive design, and load times under 3 seconds.",
+      "OpenAI-powered chatbot (Spuff) with streaming responses, plus a validated contact pipeline via Resend.",
+      "AWS deployment with CloudFront CDN, Route 53, SSL, and CI/CD via GitHub Actions — hybrid SSR/CSR rendering for SEO.",
     ],
     metrics: [
-      { value: "<3s", label: "Load Time", detail: "CDN + lazy loading" },
-      { value: "100", label: "Lighthouse Score", detail: "Mobile-first design" },
-      { value: "24/7", label: "Uptime", detail: "AWS EC2 + PM2" },
+      { value: "<3s", label: "Load Time" },
+      { value: "100", label: "Lighthouse" },
+      { value: "24/7", label: "Uptime" },
     ],
-    stack: ["Next.js", "React", "TypeScript", "Three.js", "React Three Fiber", "OpenAI API", "Resend", "Tailwind CSS", "AWS EC2", "Nginx", "CloudFront", "Route 53", "Let's Encrypt", "PM2", "GitHub Actions"],
-    link: "https://rohitkarumanchi.com",
-    linkText: "Live Site",
-  },
-  {
-    title: "Amaravati - Smart City Mobility Platform",
-    subtitle: "",
-    points: [],
-    metrics: [],
-    stack: [],
-    link: "#",
-    linkText: "Coming Soon",
-    comingSoon: true,
-    location: "Amaravati, Andhra Pradesh",
-    cycleImage: true,
+    stack: ["Next.js", "TypeScript", "Three.js", "React Three Fiber", "OpenAI API", "Tailwind CSS", "AWS", "CloudFront", "GitHub Actions"],
+    link: "https://github.com/rohitkarumanchi745/rohit-portfolio",
+    linkText: "Source",
   },
 ];
 
 const skills = [
-  { group: "Data Engineering", items: ["Kafka", "Spark", "PySpark", "Scala", "Databricks", "Airflow", "Snowflake", "dbt", "Data Fusion", "Ray/Anyscale", "SQS", "Kinesis", "Big Data", "PostgreSQL", "MySQL", "MongoDB", "Redis", "Cassandra", "DynamoDB", "SQL", "NoSQL", "Data Modeling", "ETL/ELT", "Data Pipelines", "Stream Processing", "Batch Processing", "Data Warehousing", "Data Lakes", "Schema Design", "Query Optimization"] },
-  { group: "Full Stack", items: ["Python", "Java", "Rust", "C#", "React", "TypeScript", "FastAPI", "GraphQL", "React Native/Expo", "REST", "JWT/Auth", "gRPC", "Next.js", "Microfrontend Architecture", "ASP.NET Core", "Entity Framework", "Azure Functions", "SignalR"] },
-  { group: "Systems & Infrastructure", items: ["MCP Server", "Postgres", "Redis", "Docker", "Kubernetes", "Microservices"] },
-  { group: "Cloud/DevOps", items: ["AWS EC2", "AWS Amplify", "CloudFront", "Route 53", "Azure", "Nginx", "Let's Encrypt", "PM2", "Git", "GitHub", "GitHub Actions", "CI/CD", "Prometheus/Grafana", "Resend"] },
-  { group: "AI/ML & Computer Vision", items: ["PyTorch", "CNN", "OpenCV", "Federated Learning", "RL", "LangChain", "LangGraph", "FAISS", "LLaMA", "AWS Bedrock", "AWS SageMaker", "Cortex Analyst", "Cortex LLM", "Agentic AI", "Vector DBs", "RecSys", "On-Device ML", "Model Deployment"] },
-  { group: "IDEs & AI Coding Tools", items: ["Cursor", "VS Code", "PyCharm", "Xcode", "Vibe Coder", "Claude Code", "GitHub Copilot", "OpenAI", "Claude", "Gemini", "Kimi AI", "Amazon Q", "Prompt Engineering"] },
-  { group: "3D Graphics & UI", items: ["Three.js", "React Three Fiber", "WebGL", "Tailwind CSS", "Responsive Design", "Glass-morphism", "Animations"] },
-  { group: "Analytics & BI", items: ["Power BI", "Tableau", "Streamlit", "Data Visualization"] },
-  { group: "Agile & Project Management", items: ["Jira", "Agile/Scrum", "Sprint Planning", "Kanban", "Confluence", "Story Estimation", "Retrospectives"] },
+  { group: "Data Engineering", items: ["Kafka", "Spark", "PySpark", "Databricks", "Airflow", "Snowflake", "dbt", "DataFusion", "Ray/Anyscale", "Kinesis", "PostgreSQL", "MongoDB", "Redis", "Cassandra", "DynamoDB", "Stream Processing", "Data Warehousing", "Schema Design", "Query Optimization"] },
+  { group: "Full Stack", items: ["Python", "Java", "Rust", "C#", "React", "TypeScript", "Next.js", "FastAPI", "GraphQL", "React Native/Expo", "gRPC", "REST", "ASP.NET Core", "Azure Functions"] },
+  { group: "AI/ML & Agents", items: ["PyTorch", "TensorFlow", "LangChain", "LangGraph", "MCP Servers", "FAISS", "Vector DBs", "RAG", "Federated Learning", "RL", "On-Device ML", "AWS Bedrock", "SageMaker", "OpenCV", "RecSys"] },
+  { group: "Cloud & Infrastructure", items: ["AWS", "Azure", "Kubernetes", "Docker", "Terraform", "Nginx", "CloudFront", "Route 53", "GitHub Actions", "CI/CD", "Prometheus/Grafana", "Microservices"] },
+  { group: "3D & Frontend Craft", items: ["Three.js", "React Three Fiber", "WebGL", "Tailwind CSS", "Responsive Design", "Animations"] },
+  { group: "Analytics & Collaboration", items: ["Power BI", "Tableau", "Streamlit", "Jira", "Agile/Scrum", "Confluence"] },
 ];
 
-function MobileMenu() {
-  const [isOpen, setIsOpen] = useState(false);
+const socials = {
+  github: "https://github.com/rohitkarumanchi745",
+  linkedin: "https://www.linkedin.com/in/rohit-karumanchi/",
+  email: "mailto:rkkarumanchi98@gmail.com",
+};
 
+/* ------------------------------------------------------------------ */
+/*  Icons                                                               */
+/* ------------------------------------------------------------------ */
+
+function GitHubIcon({ className = "h-5 w-5" }: { className?: string }) {
   return (
-    <div className="md:hidden">
-      {/* Hamburger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
-        aria-label="Toggle menu"
-      >
-        <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {isOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
-      </button>
-
-      {/* Mobile Menu Dropdown */}
-      {isOpen && (
-        <div className="fixed top-[60px] left-0 right-0 z-40 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-200/50 dark:border-white/10">
-          <div className="flex flex-col gap-4 p-6">
-            <a
-              href="#about"
-              onClick={() => setIsOpen(false)}
-              className="text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              About Me
-            </a>
-            <a
-              href="#experience"
-              onClick={() => setIsOpen(false)}
-              className="text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              Experience
-            </a>
-            <a
-              href="#projects"
-              onClick={() => setIsOpen(false)}
-              className="text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              Projects
-            </a>
-            <a
-              href="#contact"
-              onClick={() => setIsOpen(false)}
-              className="text-base text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
-            >
-              Get in Touch
-            </a>
-          </div>
-        </div>
-      )}
-    </div>
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+    </svg>
   );
 }
 
+function LinkedInIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
+
+function MailIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
+    </svg>
+  );
+}
+
+function ArrowIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden>
+      <path d="M7 17 17 7M9 7h8v8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Interaction primitives                                              */
+/* ------------------------------------------------------------------ */
+
+function Spotlight() {
+  const [pos, setPos] = useState({ x: -600, y: -600 });
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-0 hidden lg:block"
+      style={{
+        background: `radial-gradient(620px at ${pos.x}px ${pos.y}px, rgba(139, 92, 246, 0.075), transparent 80%)`,
+      }}
+    />
+  );
+}
+
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+}
+
+function useScrollSpy(ids: string[]) {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        });
+      },
+      { rootMargin: "-30% 0px -60% 0px" }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [ids]);
+  return active;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Chatbot                                                             */
+/* ------------------------------------------------------------------ */
+
 function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Array<{role: string; content: string}>>([]);
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Only initialize messages when chat is first opened
   useEffect(() => {
     if (isOpen && !isInitialized) {
       setMessages([{ role: "assistant", content: "Hi! I'm Spuff, Rohit's AI assistant. Ask me anything about his experience, projects, or skills!" }]);
@@ -200,31 +269,24 @@ function Chatbot() {
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
-
     const userMessage = input;
-    setMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setInput("");
     setIsLoading(true);
-
     try {
-      // Call AI API
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage }),
       });
-
-      if (!response.ok) throw new Error('API request failed');
-
+      if (!response.ok) throw new Error("API request failed");
       const data = await response.json();
-      setMessages(prev => [...prev, { role: "assistant", content: data.response }]);
-    } catch (error) {
-      console.error('Chat error:', error);
-      // Fallback to basic response if API fails
-      setMessages(prev => [...prev, {
-        role: "assistant",
-        content: "I'm having trouble connecting right now. Please try asking again or email Rohit directly at rkkarumanchi98@gmail.com!"
-      }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "I'm having trouble connecting right now. Please try asking again or email Rohit directly at rkkarumanchi98@gmail.com!" },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -232,49 +294,49 @@ function Chatbot() {
 
   return (
     <>
-      {/* Chatbot Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-purple-500/50 transition-all hover:scale-110 hover:shadow-xl hover:shadow-purple-500/70 active:scale-95"
+        aria-label="Chat with Spuff"
+        className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-violet-400/30 bg-[#12101d]/90 text-violet-300 shadow-[0_0_30px_-6px_rgba(139,92,246,0.55)] backdrop-blur transition-all hover:scale-105 hover:border-violet-400/60 hover:text-violet-200 active:scale-95"
       >
         {isOpen ? (
-          <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         )}
       </button>
 
-      {/* Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 left-4 sm:bottom-24 sm:right-6 sm:left-auto z-50 flex h-[450px] sm:h-[500px] w-auto sm:w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-300 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 shadow-2xl backdrop-blur-xl">
-          {/* Header */}
-          <div className="flex items-center gap-2 sm:gap-3 border-b border-slate-300 dark:border-white/10 bg-gradient-to-r from-blue-600/20 to-purple-600/20 p-3 sm:p-4">
-            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600">
-              <span className="text-base sm:text-lg font-bold text-white">S</span>
-            </div>
+        <div className="fixed bottom-24 left-4 right-4 z-50 flex h-[460px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0c0e17]/95 shadow-2xl backdrop-blur-xl sm:left-auto sm:right-6 sm:w-[380px]">
+          <div className="flex items-center gap-3 border-b border-white/10 bg-violet-500/10 p-4">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/20 font-mono text-sm font-bold text-violet-300">S</div>
             <div>
-              <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">Spuff</h3>
-              <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-400">AI Assistant</p>
+              <h3 className="text-sm font-semibold text-white">Spuff</h3>
+              <p className="font-mono text-[10px] uppercase tracking-widest text-slate-500">AI Assistant</p>
             </div>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 space-y-3 sm:space-y-4 overflow-y-auto p-3 sm:p-4">
+          <div className="flex-1 space-y-3 overflow-y-auto p-4">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 ${msg.role === "user" ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white" : "border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300"}`}>
-                  <p className="text-xs sm:text-sm">{msg.content}</p>
+                <div
+                  className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
+                    msg.role === "user"
+                      ? "bg-violet-600/80 text-white"
+                      : "border border-white/10 bg-white/5 text-slate-300"
+                  }`}
+                >
+                  {msg.content}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Input */}
-          <div className="border-t border-slate-300 dark:border-white/10 p-3 sm:p-4">
+          <div className="border-t border-white/10 p-3">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -283,21 +345,22 @@ function Chatbot() {
                 onKeyDown={(e) => e.key === "Enter" && !isLoading && handleSend()}
                 placeholder={isLoading ? "Thinking..." : "Ask about Rohit..."}
                 disabled={isLoading}
-                className="flex-1 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 sm:px-4 py-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-purple-500/50 disabled:opacity-50"
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-violet-400/50 disabled:opacity-50"
               />
               <button
                 onClick={handleSend}
                 disabled={isLoading}
-                className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-3 sm:px-4 py-2 text-white transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100"
+                aria-label="Send"
+                className="rounded-xl border border-violet-400/40 bg-violet-500/20 px-4 py-2 text-violet-200 transition-all hover:bg-violet-500/30 active:scale-95 disabled:opacity-50"
               >
                 {isLoading ? (
-                  <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
                 ) : (
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
                 )}
               </button>
@@ -309,880 +372,423 @@ function Chatbot() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  Section header                                                      */
+/* ------------------------------------------------------------------ */
+
+function SectionHeader({ index, title }: { index: string; title: string }) {
+  return (
+    <div className="mb-8 flex items-center gap-4">
+      <span className="section-label">
+        <span className="text-slate-600">{index} /</span> {title}
+      </span>
+      <div className="h-px flex-1 bg-gradient-to-r from-slate-700/60 to-transparent" />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                                */
+/* ------------------------------------------------------------------ */
+
 export default function Home() {
-  const [contactForm, setContactForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  });
+  const [contactForm, setContactForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitMessage, setSubmitMessage] = useState('');
+  const [submitMessage, setSubmitMessage] = useState("");
+  const activeSection = useScrollSpy(navItems.map((n) => n.id));
+  useReveal();
 
-  // Scroll to top on page load - with delay for mobile
   useEffect(() => {
-    // Clear any hash from URL that might cause scrolling
     if (window.location.hash) {
-      window.history.replaceState(null, '', window.location.pathname);
+      window.history.replaceState(null, "", window.location.pathname);
     }
-
-    // Immediate scroll
     window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-
-    // Additional scroll after delays to ensure mobile layout is ready
-    const timer1 = setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 100);
-
-    const timer2 = setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }, 300);
-
-    return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
   }, []);
 
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitMessage('');
+  const handleContactSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      setSubmitMessage("");
 
-    // Client-side email validation
-    const emailLower = contactForm.email.toLowerCase();
-    const allowedDomains = ['@gmail.com', '@outlook.com', '@hotmail.com', '@live.com'];
-    const isValidDomain = allowedDomains.some(domain => emailLower.endsWith(domain));
+      const emailLower = contactForm.email.toLowerCase();
+      const allowedDomains = ["@gmail.com", "@outlook.com", "@hotmail.com", "@live.com"];
+      const isValidDomain = allowedDomains.some((domain) => emailLower.endsWith(domain));
 
-    if (!isValidDomain) {
-      setSubmitMessage('Please use a Gmail or Outlook email address (e.g., yourname@gmail.com or yourname@outlook.com)');
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      // Send email via API
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(contactForm),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setSubmitMessage('Thank you! Your message has been sent to Rohit. He will get back to you soon!');
-        setContactForm({ name: '', email: '', phone: '', message: '' });
-      } else {
-        setSubmitMessage(data.error || 'Failed to send message. Please email directly at rkkarumanchi98@gmail.com');
+      if (!isValidDomain) {
+        setSubmitMessage("Please use a Gmail or Outlook email address (e.g., yourname@gmail.com)");
+        setIsSubmitting(false);
+        return;
       }
-    } catch (error) {
-      console.error('Form submission error:', error);
-      setSubmitMessage('Failed to send message. Please email directly at rkkarumanchi98@gmail.com');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(contactForm),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setSubmitMessage("Thank you! Your message has been sent. Rohit will get back to you soon.");
+          setContactForm({ name: "", email: "", phone: "", message: "" });
+        } else {
+          setSubmitMessage(data.error || "Failed to send message. Please email directly at rkkarumanchi98@gmail.com");
+        }
+      } catch {
+        setSubmitMessage("Failed to send message. Please email directly at rkkarumanchi98@gmail.com");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [contactForm]
+  );
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-slate-100 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 transition-colors duration-300">
-      {/* Navigation Bar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/50 dark:border-white/10 transition-colors duration-300">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Rohit Karumanchi
+    <main className="relative z-10 min-h-screen">
+      <Spotlight />
+
+      <div className="mx-auto max-w-6xl px-6 md:px-12 lg:flex lg:justify-between lg:gap-8 lg:px-16">
+        {/* ------------------------------------------------ left rail */}
+        <header className="pt-16 lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[42%] lg:flex-col lg:justify-between lg:py-20">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/5 px-3.5 py-1.5">
+              <span className="status-dot h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="font-mono text-[11px] tracking-wider text-emerald-300/90">
+                Open to Data / Backend / ML Platform roles
+              </span>
+            </div>
+
+            <h1 className="mt-6 text-5xl font-bold tracking-tight text-white sm:text-6xl">
+              Rohit
+              <br />
+              Karumanchi
+              <span className="text-violet-400">.</span>
+            </h1>
+
+            <h2 className="mt-4 font-mono text-sm tracking-wide text-violet-300/90">
+              <span className="text-slate-600">$</span> software engineer — data · backend · AI
+              <span className="cursor-blink text-violet-400">▍</span>
             </h2>
-            {/* Desktop Menu */}
-            <div className="hidden md:flex gap-6">
-              <a href="#about" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                About Me
-              </a>
-              <a href="#experience" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Experience
-              </a>
-              <a href="#projects" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Projects
-              </a>
-              <a href="#contact" className="text-sm text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
-                Get in Touch
-              </a>
-            </div>
-            {/* Mobile Menu */}
-            <MobileMenu />
-          </div>
-        </div>
-      </nav>
 
-      {/* Animated grid background */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        {/* Grid lines - adapts to theme */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.12)_2px,transparent_2px),linear-gradient(90deg,rgba(139,92,246,0.12)_2px,transparent_2px)] dark:bg-[linear-gradient(rgba(139,92,246,0.15)_2px,transparent_2px),linear-gradient(90deg,rgba(139,92,246,0.15)_2px,transparent_2px)] bg-[size:80px_80px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)]"
-             style={{ animation: 'gridMove 25s linear infinite' }} />
+            <p className="mt-6 max-w-sm leading-relaxed text-slate-400">
+              I build <span className="text-slate-200">large-scale data platforms</span> and{" "}
+              <span className="text-slate-200">AI systems</span> that ship — from Kafka pipelines
+              moving millions of events to agents that reason over them.
+            </p>
 
-        {/* Floating particles - optimized for performance */}
-        <div className="absolute inset-0">
-          {[...Array(15)].map((_, i) => {
-            const size = 2 + (i % 4);
-            const left = (i * 13.7) % 100;
-            const top = (i * 17.3) % 100;
-            const duration = 15 + (i % 10);
-            const delay = (i % 5);
-            return (
-              <div
-                key={i}
-                className="absolute rounded-full bg-purple-400/50 dark:bg-purple-400/60 shadow-lg shadow-purple-400/40 dark:shadow-purple-400/50"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  animation: `float ${duration}s ease-in-out infinite`,
-                  animationDelay: `${delay}s`,
-                }}
-              />
-            );
-          })}
-        </div>
-
-        {/* Light rays - optimized for performance */}
-        <div className="absolute inset-0">
-          {[...Array(4)].map((_, i) => {
-            const width = 150 + (i * 12.5);
-            const left = (i * 12.5) % 100;
-            const top = (i * 11.7) % 100;
-            const rotation = (i * 45) % 360;
-            const duration = 3 + (i % 2);
-            const delay = (i % 3);
-            return (
-              <div
-                key={i}
-                className="absolute h-0.5 bg-gradient-to-r from-transparent via-purple-400/35 dark:via-purple-400/40 to-transparent shadow-lg shadow-purple-400/25 dark:shadow-purple-400/30"
-                style={{
-                  width: `${width}px`,
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  transform: `rotate(${rotation}deg)`,
-                  animation: `shimmer ${duration}s ease-in-out infinite`,
-                  animationDelay: `${delay}s`,
-                }}
-              />
-            );
-          })}
-        </div>
-
-        {/* Floating Tech Icons - Removed for cleaner look */}
-
-        {/* Additional glow spots - Reduced for better performance */}
-        <div className="absolute inset-0 hidden md:block pointer-events-none">
-          {[...Array(3)].map((_, i) => {
-            const size = 240 + (i * 50);
-            const left = (i * 35) % 100;
-            const top = (i * 30) % 100;
-            const duration = 6 + (i * 2);
-            const delay = i;
-            return (
-              <div
-                key={i}
-                className="absolute rounded-full bg-purple-400/10 dark:bg-purple-500/8 blur-3xl will-change-transform"
-                style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  animation: `pulse ${duration}s ease-in-out infinite`,
-                  animationDelay: `${delay}s`,
-                }}
-              />
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Add animations to global styles */}
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes gridMove {
-          0% {
-            transform: translate(0, 0);
-          }
-          100% {
-            transform: translate(80px, 80px);
-          }
-        }
-
-        @keyframes float {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-            opacity: 0.6;
-          }
-          50% {
-            transform: translate(20px, 20px) scale(1.8);
-            opacity: 1;
-          }
-        }
-
-        @keyframes shimmer {
-          0%, 100% {
-            opacity: 0;
-            transform: translateX(-200%) rotate(0deg);
-          }
-          50% {
-            opacity: 1;
-            transform: translateX(200%) rotate(5deg);
-          }
-        }
-
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 0.1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.3;
-            transform: scale(1.2);
-          }
-        }
-
-        /* 3D Flip Card Styles */
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .transform-style-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-        .group:hover .group-hover\\:rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-        .group\\/card:hover .group-hover\\/card\\:rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-        .group\\/resp:hover .group-hover\\/resp\\:rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-      `}} />
-
-      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 pt-20 sm:pt-28 lg:pt-32 pb-12 sm:pb-20">
-        {/* HERO */}
-        <section id="about" className="relative">
-          {/* Background gradient blur effects - purple/blue like Wope */}
-          <div className="absolute -top-40 left-1/4 h-96 w-96 rounded-full bg-purple-600 opacity-20 blur-3xl" />
-          <div className="absolute -top-20 right-1/4 h-96 w-96 rounded-full bg-blue-600 opacity-20 blur-3xl" />
-          <div className="absolute top-40 left-1/2 h-80 w-80 rounded-full bg-violet-600 opacity-15 blur-3xl" />
-
-          {/* Kling motion backdrop (drops in once /public/videos/kling/hero-backdrop.mp4 exists) */}
-          <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden rounded-3xl">
-            <MotionBackdrop src="/videos/kling/hero-backdrop.mp4" opacity={0.30} />
+            <nav className="mt-14 hidden lg:block" aria-label="Section navigation">
+              <ul className="space-y-4">
+                {navItems.map((item, i) => (
+                  <li key={item.id}>
+                    <a href={`#${item.id}`} className="group flex items-center gap-4">
+                      <span
+                        className={`h-px transition-all duration-300 ${
+                          activeSection === item.id
+                            ? "w-16 bg-violet-400"
+                            : "w-8 bg-slate-700 group-hover:w-12 group-hover:bg-slate-400"
+                        }`}
+                      />
+                      <span
+                        className={`font-mono text-xs tracking-[0.25em] uppercase transition-colors ${
+                          activeSection === item.id ? "text-white" : "text-slate-600 group-hover:text-slate-300"
+                        }`}
+                      >
+                        <span className="mr-1 text-slate-700">0{i + 1}</span>
+                        {item.label}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
 
-          <div className="relative z-10 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-            {/* Text content */}
-            <div className="relative space-y-5 sm:space-y-8 z-10 text-center lg:text-left flex-1">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-emerald-400 shadow-lg backdrop-blur-sm mx-auto lg:mx-0">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-                </span>
-                <span>Open to Data / Backend / ML Platform roles</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Hello, I'm Rohit
-              </h1>
-
-              <div className="max-w-2xl mx-auto lg:mx-0 border-l-4 border-slate-400 dark:border-slate-500 pl-4 sm:pl-6">
-                <p className="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-400 italic">
-                  "My passion lies in leveraging technology for social impact and to address real-world challenges. I thrive in entrepreneurial environments—whether building with founders, collaborating with domain experts, or shipping products that scale. I'm eager to explore new areas and make meaningful impact across healthcare, fintech, social good, or the next big thing. Let's build something that matters."
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center lg:justify-start gap-4 sm:gap-5">
-                {/* Email */}
-                <a
-                  href="#contact"
-                  className="group flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-200/80 dark:bg-white/10 text-slate-700 dark:text-slate-300 transition-all hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30"
-                  title="Contact Me"
-                >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </a>
-                {/* LinkedIn */}
-                <a
-                  href="https://www.linkedin.com/in/rohit-karumanchi/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-200/80 dark:bg-white/10 text-slate-700 dark:text-slate-300 transition-all hover:bg-[#0A66C2] hover:text-white hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30"
-                  title="LinkedIn"
-                >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                </a>
-                {/* GitHub */}
-                <a
-                  href="https://github.com/rohitkarumanchi745"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="group flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-200/80 dark:bg-white/10 text-slate-700 dark:text-slate-300 transition-all hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-slate-900 hover:scale-110 hover:shadow-lg hover:shadow-slate-500/30"
-                  title="GitHub"
-                >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                  </svg>
-                </a>
-              </div>
-            </div>
-
-            {/* 3D Scene */}
-            <div className="hidden lg:block flex-1 h-[400px] w-full max-w-md">
-              <div className="relative h-full w-full rounded-3xl overflow-hidden border border-slate-200/50 dark:border-white/10 bg-gradient-to-br from-slate-100/50 via-purple-100/30 to-blue-100/50 dark:from-slate-900/50 dark:via-purple-900/30 dark:to-blue-900/50 shadow-2xl shadow-purple-500/10">
-                <Scene3D />
-              </div>
-            </div>
+          <div className="mt-12 flex items-center gap-5 pb-10 lg:mt-0 lg:pb-0">
+            <a href={socials.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="text-slate-500 transition-all hover:-translate-y-0.5 hover:text-white">
+              <GitHubIcon className="h-6 w-6" />
+            </a>
+            <a href={socials.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="text-slate-500 transition-all hover:-translate-y-0.5 hover:text-white">
+              <LinkedInIcon className="h-6 w-6" />
+            </a>
+            <a href={socials.email} aria-label="Email" className="text-slate-500 transition-all hover:-translate-y-0.5 hover:text-white">
+              <MailIcon className="h-6 w-6" />
+            </a>
+            <span className="ml-2 hidden h-px w-24 bg-slate-800 lg:block" />
+            <span className="hidden font-mono text-[10px] tracking-[0.3em] text-slate-700 lg:block">DFW · TEXAS</span>
           </div>
-        </section>
+        </header>
 
-        {/* ABOUT ME */}
-        <section className="mt-12 sm:mt-16 lg:mt-20">
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-white/10 bg-white/80 dark:bg-white/5 p-6 sm:p-8 lg:p-10 md:backdrop-blur-sm">
-            <div className="absolute left-0 top-0 h-40 w-40 rounded-full bg-blue-600 opacity-20 blur-3xl hidden md:block" />
-            <div className="absolute right-0 bottom-0 h-40 w-40 rounded-full bg-purple-600 opacity-15 blur-3xl hidden md:block" />
+        {/* ------------------------------------------------ right column */}
+        <div className="lg:w-[54%] lg:py-20">
+          {/* about */}
+          <section id="about" className="reveal scroll-mt-24 pt-16 lg:pt-0">
+            <SectionHeader index="01" title="About" />
 
-            <div className="relative">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-6">About Me</h2>
-
-              <div className="space-y-4 sm:space-y-5 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-                <p className="text-lg sm:text-xl font-semibold text-slate-800 dark:text-slate-200">
-                  AI-focused Software Engineer passionate about building innovative, scalable solutions.
-                </p>
-                <p>
-                  I specialize in designing and deploying large-scale, high-performance data and AI systems at Neiman Marcus Group, supporting both customer-facing analytics and internal decision-making platforms. I'm skilled at translating complex business needs into robust technical solutions and enjoy working with cutting-edge technologies.
-                </p>
-                <p>
-                  Prior to Neiman Marcus, I worked at NNR Global Logistics, where I tackled large-scale data challenges and contributed to modernizing pipelines across critical workflows. These experiences sharpened my understanding of software engineering best practices and the importance of building reliable, scalable systems.
-                </p>
-                <p>
-                  I hold a Master's degree in Computer Information Technology and Management from the University of Texas at Dallas. I'm driven by a desire to push boundaries and continuously explore what's next in data engineering and AI.
-                </p>
-              </div>
+            <div className="glass mb-8 h-56 overflow-hidden sm:h-64">
+              <Scene3D />
             </div>
-          </div>
-        </section>
 
-        {/* EXPERIENCE */}
-        <section id="experience" className="mt-12 sm:mt-16 lg:mt-20">
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-white/10 bg-white/80 dark:bg-white/5 p-6 sm:p-8 lg:p-10 md:backdrop-blur-sm">
-            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-purple-600 opacity-20 blur-3xl hidden md:block" />
+            <div className="space-y-4 leading-relaxed text-slate-400">
+              <p>
+                I&apos;m an <span className="text-slate-200">AI-focused software engineer</span> who
+                enjoys the deep end: distributed systems, data engineering, and applied ML. Right now
+                I design and deploy large-scale, high-performance data and AI systems at{" "}
+                <span className="text-violet-300">Neiman Marcus Group</span>, supporting both
+                customer-facing analytics and internal decision-making platforms.
+              </p>
+              <p>
+                Before that, I worked at <span className="text-slate-200">NNR Global Logistics</span>,
+                tackling large-scale data challenges and modernizing pipelines across critical
+                workflows — where I learned that reliability is a feature users feel.
+              </p>
+              <p>
+                I hold a Master&apos;s in Computer Information Technology and Management from the{" "}
+                <span className="text-slate-200">University of Texas at Dallas</span>, and I&apos;m
+                driven to explore what&apos;s next in data engineering and AI — whether building with
+                founders, collaborating with domain experts, or shipping products that scale.{" "}
+                <span className="text-violet-300">Let&apos;s build something that matters.</span>
+              </p>
+            </div>
+          </section>
 
-            <div className="relative">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
+          {/* experience */}
+          <section id="experience" className="reveal scroll-mt-24 pt-24">
+            <SectionHeader index="02" title="Experience" />
+
+            <div className="glass p-6 sm:p-8">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Neiman Marcus Group</h3>
-                  <div className="mt-2 text-base sm:text-lg font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Software Engineer (Full Stack + Data)</div>
+                  <h3 className="text-xl font-semibold text-white">{experience.company}</h3>
+                  <p className="mt-1 font-mono text-sm text-violet-300/90">{experience.role}</p>
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-blue-500/20 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-300 w-fit">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                  </svg>
-                  2023–Present
-                </div>
+                <span className="font-mono text-xs tracking-wider text-slate-500">{experience.period}</span>
               </div>
 
-              <p className="mt-4 sm:mt-6 text-base sm:text-lg leading-relaxed text-slate-700 dark:text-slate-200 border-l-4 border-purple-500 pl-3 sm:pl-4 italic">
-                I design and build large-scale, high-performance data and AI-adjacent systems supporting customer-facing analytics, operational intelligence, and internal decision-making platforms. My work sits at the intersection of distributed systems, data engineering, and applied ML.
+              <p className="mt-4 border-l-2 border-violet-500/40 pl-4 text-sm italic leading-relaxed text-slate-400">
+                {experience.summary}
               </p>
 
-              <div className="mt-4 sm:mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Card 1 - Shipping Savings */}
-                <div className="group perspective-1000 h-32 sm:h-36">
-                  <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
-                    {/* Front */}
-                    <div className="absolute inset-0 backface-hidden text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col justify-center">
-                      <p className="text-2xl sm:text-3xl font-bold text-purple-400">$1.5M+</p>
-                      <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Shipping Savings</p>
-                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-500 mt-1">Hover for details</p>
-                    </div>
-                    {/* Back */}
-                    <div className="absolute inset-0 backface-hidden rotate-y-180 text-center p-4 rounded-xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 flex flex-col justify-center">
-                      <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-1">How?</p>
-                      <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Real-time Kafka streaming pipelines optimizing carrier selection & route efficiency</p>
-                    </div>
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {experience.metrics.map((m) => (
+                  <div key={m.label} className="group rounded-xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-violet-400/40">
+                    <div className="font-mono text-2xl font-bold text-violet-300">{m.value}</div>
+                    <div className="mt-1 text-xs font-medium text-slate-300">{m.label}</div>
+                    <div className="mt-2 text-[11px] leading-snug text-slate-500">{m.detail}</div>
                   </div>
-                </div>
-
-                {/* Card 2 - Efficiency Gain */}
-                <div className="group perspective-1000 h-32 sm:h-36">
-                  <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
-                    {/* Front */}
-                    <div className="absolute inset-0 backface-hidden text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col justify-center">
-                      <p className="text-2xl sm:text-3xl font-bold text-purple-400">250%</p>
-                      <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Efficiency Gain</p>
-                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-500 mt-1">Hover for details</p>
-                    </div>
-                    {/* Back */}
-                    <div className="absolute inset-0 backface-hidden rotate-y-180 text-center p-4 rounded-xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 flex flex-col justify-center">
-                      <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-1">How?</p>
-                      <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Spark/Databricks automation replacing manual ETL with orchestrated data pipelines</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card 3 - Annual Cost Savings */}
-                <div className="group perspective-1000 h-32 sm:h-36">
-                  <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover:rotate-y-180">
-                    {/* Front */}
-                    <div className="absolute inset-0 backface-hidden text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20 flex flex-col justify-center">
-                      <p className="text-2xl sm:text-3xl font-bold text-purple-400">$5M+</p>
-                      <p className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">Annual Cost Savings</p>
-                      <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-500 mt-1">Hover for details</p>
-                    </div>
-                    {/* Back */}
-                    <div className="absolute inset-0 backface-hidden rotate-y-180 text-center p-4 rounded-xl bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/30 flex flex-col justify-center">
-                      <p className="text-xs sm:text-sm font-semibold text-purple-400 mb-1">How?</p>
-                      <p className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 leading-relaxed">ML-powered fraud detection & predictive analytics reducing chargebacks & losses</p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Responsibilities */}
-              <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
-                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Design and build large-scale data and AI-adjacent systems supporting customer-facing analytics and operational intelligence</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
-                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Translate complex business requirements into reliable, production-grade solutions operating at enterprise scale</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
-                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Partner with stakeholders across business units to translate requirements into scalable, production-grade data products</span>
-                </li>
-                <li className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-slate-700 dark:text-slate-200">
-                  <svg className="mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Power downstream analytics for fraud detection, demand forecasting, and inventory optimization using ML models</span>
-                </li>
+              <ul className="mt-6 space-y-2.5">
+                {experience.points.map((point, i) => (
+                  <li key={i} className="flex gap-3 text-sm leading-relaxed text-slate-400">
+                    <span className="mt-1 text-violet-400">▹</span>
+                    {point}
+                  </li>
+                ))}
               </ul>
 
-              <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2">
-                {["Java", "Spring Boot", "Kafka", "React Native", "Kubernetes", "AWS", "Terraform", "Python", "TensorFlow", "SageMaker"].map((tech) => (
-                  <span key={tech} className="rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {tech}
-                  </span>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {experience.stack.map((tech) => (
+                  <span key={tech} className="chip">{tech}</span>
                 ))}
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* EDUCATION */}
-        <section id="education" className="mt-12 sm:mt-16 lg:mt-20">
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-white/10 bg-white/80 dark:bg-white/5 p-6 sm:p-8 lg:p-10 md:backdrop-blur-sm">
-            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-orange-600 opacity-20 blur-3xl hidden md:block" />
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div className="glass p-6">
+                <h3 className="text-base font-semibold text-white">{priorExperience.company}</h3>
+                <p className="mt-1 font-mono text-xs text-slate-500">{priorExperience.role} · prior</p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">{priorExperience.summary}</p>
+              </div>
 
-            <div className="relative">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  {/* UT Dallas Logo */}
-                  <div className="flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 relative">
-                    <img
-                      src="/UT_Dallas_2_Color_Emblem_-_SVG_Brand_Identity_File.svg.png"
-                      alt="UT Dallas Logo"
-                      className="w-full h-full object-contain"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">University of Texas at Dallas</h3>
-                    <div className="mt-2 text-base sm:text-lg font-medium bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">Master's in Computer Information Technology and Management</div>
-                  </div>
+              <div className="glass flex items-center gap-4 p-6">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/90 p-1.5">
+                  <Image src={education.logo} alt="UT Dallas" width={48} height={48} className="h-full w-full object-contain" />
                 </div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-orange-500/20 px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold text-orange-600 dark:text-orange-400 w-fit">
-                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
-                  </svg>
-                  Graduate Degree
+                <div>
+                  <h3 className="text-base font-semibold text-white">{education.school}</h3>
+                  <p className="mt-1 text-sm leading-snug text-slate-400">{education.degree}</p>
+                  <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-amber-400/80">Graduate Degree</p>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* PROJECTS */}
-        <section id="projects" className="mt-16 sm:mt-24 lg:mt-32">
-          <div className="mb-8 sm:mb-12 text-center px-4">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Projects</h2>
-            <p className="mt-3 sm:mt-4 text-base sm:text-lg text-slate-600 dark:text-slate-400">Projects that show real system thinking: build, ship, operate.</p>
-          </div>
+          {/* projects */}
+          <section id="projects" className="reveal scroll-mt-24 pt-24">
+            <SectionHeader index="03" title="Projects" />
 
-          {/* Hyperframes-rendered project reel (drops in once /public/videos/hyperframes/project-reel.mp4 exists) */}
-          <div className="mb-8 sm:mb-12 aspect-[16/6]">
-            <ProjectReel src="/videos/hyperframes/project-reel.mp4" className="h-full w-full" />
-          </div>
+            <div className="space-y-5">
+              {projects.map((project) => (
+                <div key={project.title} className={`glass p-6 sm:p-8 ${project.featured ? "border-violet-400/25" : ""}`}>
+                  {project.featured && (
+                    <span className="mb-3 inline-block rounded-full border border-violet-400/40 bg-violet-500/10 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.25em] text-violet-300">
+                      Featured Build
+                    </span>
+                  )}
 
-          <div className="grid gap-6 sm:gap-8">
-            {projects.map((p, idx) => (
-              <div key={p.title} className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border p-5 sm:p-6 lg:p-8 md:backdrop-blur-sm transition-all ${
-                idx === 0
-                  ? "border-purple-300 dark:border-purple-500/30 bg-gradient-to-br from-purple-100/60 via-blue-100/60 to-slate-100/60 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-slate-900/20 shadow-xl shadow-purple-300/20 dark:shadow-purple-500/20 hover:border-purple-400 dark:hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-400/40 dark:hover:shadow-purple-500/40"
-                  : "border-slate-300 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:border-slate-400 dark:hover:border-white/20 hover:bg-white/90 dark:hover:bg-white/10 hover:shadow-2xl hover:shadow-purple-300/20 dark:hover:shadow-purple-500/20"
-              }`}>
-                {/* Animated gradient background - stronger for Nava */}
-                <div className={`absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10 opacity-0 transition-opacity ${
-                  idx === 0 ? "group-hover:opacity-30" : "group-hover:opacity-100"
-                }`} />
-
-                {/* Coming Soon badge for Amaravati */}
-                {idx === 0 && (
-                  <div className="absolute -right-12 top-8 rotate-45 bg-gradient-to-r from-green-500 to-emerald-500 px-12 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
-                    Coming Soon
-                  </div>
-                )}
-
-                {/* Featured badge for Nava */}
-                {p.featured && (
-                  <div className="absolute -right-12 top-8 rotate-45 bg-gradient-to-r from-orange-500 to-pink-500 px-12 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
-                    Featured
-                  </div>
-                )}
-
-                <div className="relative">
-                  <div className="flex flex-col gap-3 sm:gap-4">
-                    <div className="flex-1">
-                      <div className={`mb-2 inline-block rounded-lg px-2.5 sm:px-3 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold ${
-                        idx === 0
-                          ? "bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-700 dark:text-purple-300 shadow-md"
-                          : "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-700 dark:text-blue-300"
-                      }`}>
-                        PROJECT {String(idx + 1).padStart(2, '0')}
-                      </div>
-                      <h3 className={`text-lg sm:text-xl lg:text-2xl font-bold ${
-                        idx === 0
-                          ? "bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent"
-                          : p.featured
-                          ? "bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent"
-                          : "text-slate-900 dark:text-white"
-                      }`}>
-                        {p.title}
-                      </h3>
-                      {p.featured && (
-                        <span className="mt-2 inline-block rounded-lg bg-orange-500/20 border border-orange-500/30 px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-semibold text-orange-600 dark:text-orange-400">
-                          In Progress • App Store Launch Pending
-                        </span>
-                      )}
-                      {p.comingSoon && (
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <span className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-semibold text-green-600 dark:text-green-400">
-                            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                            </svg>
-                            Coming Soon
-                          </span>
-                          {p.location && (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg bg-blue-500/20 border border-blue-500/30 px-2.5 sm:px-3 py-1 text-[10px] sm:text-xs font-semibold text-blue-600 dark:text-blue-400">
-                              <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                              </svg>
-                              {p.location}
-                            </span>
-                          )}
-                          {p.cycleImage && (
-                            <span className="inline-flex items-center gap-1.5 text-2xl sm:text-3xl" title="Smart Bicycle Platform">
-                              🚴‍♂️
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      <div className={`mt-2 text-sm sm:text-base ${
-                        idx === 0 ? "text-slate-700 dark:text-slate-200 font-medium" : "text-slate-600 dark:text-slate-300"
-                      }`}>{p.subtitle}</div>
-
-                      {/* Flip Card Metrics */}
-                      {p.metrics && p.metrics.length > 0 && (
-                        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-4">
-                          {p.metrics.map((metric: {value: string; label: string; detail: string}, mIdx: number) => (
-                            <div key={mIdx} className="group/card perspective-1000 h-24 sm:h-28">
-                              <div className="relative w-full h-full transition-transform duration-500 transform-style-3d group-hover/card:rotate-y-180">
-                                <div className={`absolute inset-0 backface-hidden text-center p-2 sm:p-3 rounded-lg flex flex-col justify-center ${idx === 0 || p.featured ? "bg-purple-500/15 border border-purple-500/30" : "bg-slate-100 dark:bg-white/10 border border-slate-300 dark:border-white/10"}`}>
-                                  <p className={`text-lg sm:text-2xl font-bold ${idx === 0 || p.featured ? "text-purple-400" : "text-blue-500 dark:text-blue-400"}`}>{metric.value}</p>
-                                  <p className="text-[9px] sm:text-xs font-medium text-slate-700 dark:text-slate-300 leading-tight">{metric.label}</p>
-                                  <p className="text-[8px] sm:text-[10px] text-slate-500 dark:text-slate-500 mt-0.5">Hover</p>
-                                </div>
-                                <div className={`absolute inset-0 backface-hidden rotate-y-180 text-center p-2 sm:p-3 rounded-lg flex flex-col justify-center ${idx === 0 || p.featured ? "bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-500/40" : "bg-gradient-to-br from-blue-500/15 to-purple-500/15 border border-blue-500/30"}`}>
-                                  <p className={`text-[9px] sm:text-xs font-semibold mb-0.5 ${idx === 0 || p.featured ? "text-purple-400" : "text-blue-500 dark:text-blue-400"}`}>How?</p>
-                                  <p className="text-[9px] sm:text-xs text-slate-600 dark:text-slate-300 leading-tight">{metric.detail}</p>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+                      <p className="mt-1 text-sm text-slate-400">{project.subtitle}</p>
+                      {project.status && (
+                        <p className="mt-2 font-mono text-[10px] uppercase tracking-widest text-amber-400/80">{project.status}</p>
                       )}
                     </div>
-
-                    <a
-                      className={`inline-flex w-fit shrink-0 items-center gap-2 rounded-xl border-2 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium backdrop-blur-sm transition-all active:scale-95 ${
-                        idx === 0
-                          ? "border-purple-500/50 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/50"
-                          : "border-slate-300 dark:border-white/10 bg-slate-200/70 dark:bg-white/5 text-slate-900 dark:text-white hover:border-purple-500/50 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white"
-                      }`}
-                      href={p.link}
-                      target={p.link.startsWith("http") ? "_blank" : undefined}
-                      rel={p.link.startsWith("http") ? "noreferrer" : undefined}
-                    >
-                      {p.linkText}
-                      <svg className="h-3 w-3 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </a>
+                    {project.link && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="link-underline inline-flex items-center gap-1 font-mono text-xs text-violet-300 transition-colors hover:text-violet-200"
+                      >
+                        {project.linkText} <ArrowIcon className="h-3.5 w-3.5" />
+                      </a>
+                    )}
                   </div>
 
-                  <ul className="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
-                    {p.points.map((pt, ptIdx) => (
-                      <li key={pt} className={`flex items-start gap-2 sm:gap-3 text-sm sm:text-base ${
-                        idx === 0 ? "text-slate-700 dark:text-slate-200" : "text-slate-600 dark:text-slate-300"
-                      } ${
-                        ptIdx >= 3 ? "hidden md:flex" : ""
-                      }`}>
-                        <svg className={`mt-0.5 sm:mt-1 h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0 ${
-                          idx === 0 ? "text-purple-400" : "text-purple-400"
-                        }`} fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span>{pt}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2">
-                    {p.stack.map((s, stackIdx) => (
-                      <span key={s} className={`rounded-full border px-2.5 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-medium backdrop-blur-sm transition-all ${
-                        idx === 0
-                          ? "border-purple-500/30 bg-purple-500/10 text-purple-700 dark:text-purple-200 hover:border-purple-500/50 hover:bg-purple-500/20 hover:scale-105"
-                          : "border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:border-purple-500/50 hover:bg-slate-200 dark:hover:bg-white/10"
-                      } ${
-                        stackIdx >= 8 ? "hidden md:inline-block" : ""
-                      }`}>
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* SKILLS */}
-        <section id="skills" className="mt-16 sm:mt-24 lg:mt-32">
-          <div className="mb-8 sm:mb-12 text-center px-4">
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Skills & Technologies</h2>
-          </div>
-
-          {/* Bento Grid Layout */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4 auto-rows-auto">
-            {skills.map((s, idx) => {
-              const gradients = [
-                "from-blue-500 to-cyan-500",
-                "from-purple-500 to-pink-500",
-                "from-orange-500 to-red-500",
-                "from-green-500 to-emerald-500",
-                "from-indigo-500 to-violet-500",
-                "from-yellow-500 to-orange-500",
-                "from-rose-500 to-pink-500",
-                "from-teal-500 to-cyan-500",
-                "from-violet-500 to-purple-500"
-              ];
-
-              // Bento grid span patterns for visual interest
-              const spanClasses = [
-                "col-span-2", // Data Engineering - wide
-                "col-span-2", // Full Stack - wide (expanded with Microsoft stack)
-                "col-span-1", // Systems & Infrastructure
-                "col-span-2", // Cloud/DevOps - wide
-                "col-span-2", // AI/ML - wide
-                "col-span-2", // IDEs & AI Coding Tools - wide
-                "col-span-1", // 3D Graphics & UI
-                "col-span-1", // Analytics & BI
-                "col-span-2", // Agile & Project Management - wide
-              ];
-
-              // Individual hover styles for each card
-              const hoverStyles = [
-                "hover:border-blue-400 dark:hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-500/30",
-                "hover:border-purple-400 dark:hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/40 dark:hover:shadow-purple-500/30",
-                "hover:border-orange-400 dark:hover:border-orange-500/50 hover:shadow-2xl hover:shadow-orange-500/40 dark:hover:shadow-orange-500/30",
-                "hover:border-green-400 dark:hover:border-green-500/50 hover:shadow-2xl hover:shadow-green-500/40 dark:hover:shadow-green-500/30",
-                "hover:border-indigo-400 dark:hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/30",
-                "hover:border-yellow-400 dark:hover:border-yellow-500/50 hover:shadow-2xl hover:shadow-yellow-500/40 dark:hover:shadow-yellow-500/30",
-                "hover:border-rose-400 dark:hover:border-rose-500/50 hover:shadow-2xl hover:shadow-rose-500/40 dark:hover:shadow-rose-500/30",
-                "hover:border-teal-400 dark:hover:border-teal-500/50 hover:shadow-2xl hover:shadow-teal-500/40 dark:hover:shadow-teal-500/30",
-                "hover:border-violet-400 dark:hover:border-violet-500/50 hover:shadow-2xl hover:shadow-violet-500/40 dark:hover:shadow-violet-500/30",
-              ];
-
-              return (
-                <div
-                  key={s.group}
-                  className={`group relative overflow-hidden rounded-xl sm:rounded-2xl border border-slate-300 dark:border-white/10 bg-white/80 dark:bg-white/5 p-3 sm:p-5 md:backdrop-blur-sm transition-all duration-150 hover:bg-white dark:hover:bg-white/10 hover:scale-[1.02] flex flex-col ${spanClasses[idx]} ${hoverStyles[idx]}`}
-                >
-                  <div className={`absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br ${gradients[idx]} opacity-10 blur-2xl transition-all duration-150 group-hover:opacity-40 group-hover:scale-150`} />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${gradients[idx]} opacity-0 transition-opacity duration-150 group-hover:opacity-[0.08]`} />
-
-                  <div className="relative flex flex-col h-full">
-                    <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white mb-2 sm:mb-3 flex-shrink-0">{s.group}</h3>
-                    <div className="flex flex-wrap gap-1 sm:gap-1.5 content-start flex-1">
-                      {s.items.map((it) => (
-                        <span key={it} className="rounded-md border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] lg:text-xs font-medium text-slate-700 dark:text-slate-300 backdrop-blur-sm transition-all hover:border-purple-500/50 hover:bg-slate-200 dark:hover:bg-white/10 hover:scale-105 h-fit whitespace-nowrap">
-                          {it}
-                        </span>
+                  {project.metrics.length > 0 && (
+                    <div className="mt-5 flex flex-wrap gap-6">
+                      {project.metrics.map((m) => (
+                        <div key={m.label}>
+                          <div className="font-mono text-xl font-bold text-violet-300">{m.value}</div>
+                          <div className="mt-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-500">{m.label}</div>
+                        </div>
                       ))}
                     </div>
-                  </div>
+                  )}
+
+                  {project.points.length > 0 && (
+                    <ul className="mt-5 space-y-2">
+                      {(project.featured ? project.points : project.points.slice(0, 4)).map((point, i) => (
+                        <li key={i} className="flex gap-3 text-sm leading-relaxed text-slate-400">
+                          <span className="mt-1 text-violet-400">▹</span>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {project.stack.length > 0 && (
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {project.stack.map((tech) => (
+                        <span key={tech} className="chip">{tech}</span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              );
-            })}
-          </div>
-        </section>
+              ))}
 
-        {/* CONTACT */}
-        <section id="contact" className="mt-16 sm:mt-24 lg:mt-32">
-          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-300 dark:border-white/10 bg-gradient-to-br from-purple-50 via-slate-50 to-blue-50 dark:from-purple-900/50 dark:via-slate-900/50 dark:to-blue-900/50 p-6 sm:p-8 lg:p-12 md:backdrop-blur-xl">
-            <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-600 opacity-30 blur-3xl hidden md:block" />
-            <div className="absolute -left-20 -bottom-20 h-64 w-64 rounded-full bg-purple-600 opacity-30 blur-3xl hidden md:block" />
-
-            <div className="relative">
-              <div className="mb-8 sm:mb-10 text-center">
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Get In Touch</h2>
-                <p className="mt-3 sm:mt-4 text-base sm:text-lg text-slate-700 dark:text-slate-300 px-4">
-                  Interested in working together? Fill out the form below and I'll get back to you soon!
-                </p>
-              </div>
-
-              {/* Contact Form */}
-              <form onSubmit={handleContactSubmit} className="mx-auto max-w-xl space-y-4 sm:space-y-6">
+              {/* coming soon */}
+              <div className="glass flex items-center justify-between border-dashed p-6 opacity-80">
                 <div>
-                  <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    required
-                    value={contactForm.name}
-                    onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-purple-500/50 focus:bg-white dark:focus:bg-white/10 transition-all"
-                    placeholder="John Doe"
-                  />
+                  <h3 className="text-base font-semibold text-slate-300">Amaravati — Smart City Mobility Platform</h3>
+                  <p className="mt-1 font-mono text-xs text-slate-500">Amaravati, Andhra Pradesh</p>
                 </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    value={contactForm.email}
-                    onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-purple-500/50 focus:bg-white dark:focus:bg-white/10 transition-all"
-                    placeholder="yourname@gmail.com"
-                  />
-                  <p className="mt-1 text-[10px] sm:text-xs text-slate-600 dark:text-slate-400">Only Gmail or Outlook addresses accepted</p>
-                  <p className="mt-1 text-[10px] sm:text-xs text-slate-500 dark:text-slate-500">Or email directly: <a href="mailto:rkkarumanchi98@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">rkkarumanchi98@gmail.com</a></p>
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">
-                    Phone Number <span className="text-slate-400">(Optional)</span>
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    value={contactForm.phone}
-                    onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-purple-500/50 focus:bg-white dark:focus:bg-white/10 transition-all"
-                    placeholder="+1 (555) 123-4567"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 sm:mb-2">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    required
-                    rows={5}
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                    className="w-full rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 outline-none focus:border-purple-500/50 focus:bg-white dark:focus:bg-white/10 transition-all resize-none"
-                    placeholder="Tell me about your project, opportunity, or just say hi..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !contactForm.name.trim() || !contactForm.email.trim()}
-                  className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg shadow-purple-500/50 transition-all hover:scale-105 hover:shadow-xl hover:shadow-purple-500/70 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
-                </button>
-
-                {submitMessage && (
-                  <div className="rounded-xl bg-emerald-500/10 border border-emerald-500/30 px-3 sm:px-4 py-2.5 sm:py-3 text-center text-xs sm:text-sm text-emerald-600 dark:text-emerald-400">
-                    {submitMessage}
-                  </div>
-                )}
-              </form>
-
-              {/* Social Links */}
-              <div className="mt-8 sm:mt-10 flex flex-wrap justify-center gap-3 sm:gap-4">
-                <a className="rounded-xl border-2 border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-slate-900 dark:text-white backdrop-blur-sm transition-all hover:border-slate-400 dark:hover:border-white/20 hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95" href="mailto:rkkarumanchi98@gmail.com">
-                  <span className="flex items-center gap-2">
-                    <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    Email
-                  </span>
-                </a>
-                <a className="rounded-xl border-2 border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-slate-900 dark:text-white backdrop-blur-sm transition-all hover:border-slate-400 dark:hover:border-white/20 hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95" href="https://www.linkedin.com/in/rohit-karumanchi/" target="_blank" rel="noreferrer">
-                  LinkedIn
-                </a>
-                <a className="rounded-xl border-2 border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold text-slate-900 dark:text-white backdrop-blur-sm transition-all hover:border-slate-400 dark:hover:border-white/20 hover:bg-slate-100 dark:hover:bg-white/10 active:scale-95" href="https://github.com/rohitkarumanchi745" target="_blank" rel="noreferrer">
-                  GitHub
-                </a>
+                <span className="rounded-full border border-white/10 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-slate-500">
+                  Coming Soon
+                </span>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <footer className="mt-20 pb-10 text-center text-sm text-slate-600 dark:text-slate-500">
-          © {new Date().getFullYear()} Rohit Karumanchi
-        </footer>
+          {/* stack */}
+          <section id="stack" className="reveal scroll-mt-24 pt-24">
+            <SectionHeader index="04" title="Stack" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {skills.map((group) => (
+                <div key={group.group} className="glass p-5">
+                  <h3 className="mb-3 font-mono text-[11px] uppercase tracking-[0.25em] text-violet-300/80">
+                    {group.group}
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {group.items.map((item) => (
+                      <span key={item} className="chip !text-[0.65rem]">{item}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* contact */}
+          <section id="contact" className="reveal scroll-mt-24 pt-24 pb-20">
+            <SectionHeader index="05" title="Contact" />
+
+            <div className="glass p-6 sm:p-10">
+              <h3 className="text-2xl font-bold text-white sm:text-3xl">
+                Let&apos;s build something{" "}
+                <span className="bg-gradient-to-r from-violet-400 to-cyan-300 bg-clip-text text-transparent">
+                  that matters.
+                </span>
+              </h3>
+              <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-400">
+                I&apos;m eager to make meaningful impact across healthcare, fintech, social good — or
+                the next big thing. My inbox is always open.
+              </p>
+
+              <form onSubmit={handleContactSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
+                <input
+                  type="text"
+                  required
+                  placeholder="Name"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                  className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-violet-400/50"
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="Email (Gmail / Outlook)"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                  className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-violet-400/50"
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone (optional)"
+                  value={contactForm.phone}
+                  onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                  className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-violet-400/50 sm:col-span-2"
+                />
+                <textarea
+                  required
+                  rows={4}
+                  placeholder="What are we building?"
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
+                  className="resize-none rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-slate-500 outline-none transition-colors focus:border-violet-400/50 sm:col-span-2"
+                />
+                <div className="flex flex-wrap items-center gap-4 sm:col-span-2">
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="rounded-xl border border-violet-400/50 bg-violet-500/15 px-6 py-3 font-mono text-sm text-violet-200 shadow-[0_0_24px_-8px_rgba(139,92,246,0.6)] transition-all hover:bg-violet-500/25 hover:shadow-[0_0_32px_-6px_rgba(139,92,246,0.7)] active:scale-95 disabled:opacity-50"
+                  >
+                    {isSubmitting ? "Sending…" : "Send message →"}
+                  </button>
+                  <a href={socials.email} className="link-underline font-mono text-xs text-slate-400 hover:text-slate-200">
+                    or email directly
+                  </a>
+                </div>
+                {submitMessage && (
+                  <p className="text-sm text-violet-300 sm:col-span-2">{submitMessage}</p>
+                )}
+              </form>
+            </div>
+
+            <footer className="mt-14 flex flex-wrap items-center justify-between gap-3">
+              <p className="font-mono text-[11px] tracking-wider text-slate-600">
+                Designed &amp; built by Rohit Karumanchi
+              </p>
+              <p className="font-mono text-[11px] tracking-wider text-slate-700">
+                Next.js × Three.js × Tailwind — grown slowly · shipped ripe
+              </p>
+            </footer>
+          </section>
+        </div>
       </div>
 
-      {/* Spuff Chatbot */}
       <Chatbot />
     </main>
   );

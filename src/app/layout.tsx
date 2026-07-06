@@ -1,24 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const displayFont = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
-  display: 'swap', // Faster font loading
+  display: "swap",
   preload: true,
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const bodyFont = Inter({
+  variable: "--font-body",
   subsets: ["latin"],
-  display: 'swap', // Faster font loading
+  display: "swap",
+  preload: true,
+});
+
+const monoFont = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
   preload: true,
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://rohitkarumanchi.com'),
-  title: "Rohit Karumanchi - Software Engineer | Full Stack & Data Engineering",
+  title: "Rohit Karumanchi — Software Engineer | Data, Backend & AI Systems",
   description: "Rohit Karumanchi - Software Engineer specializing in Data Engineering, Full Stack Development, AI/ML, and Cloud Infrastructure. Expert in Kafka, Spark, Databricks, Python, Rust, React Native, and PyTorch. MS from UT Dallas. Currently at Neiman Marcus Group.",
   keywords: [
     "Rohit Karumanchi",
@@ -60,22 +67,19 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://rohitkarumanchi.com',
-    title: "Rohit Karumanchi - Software Engineer | Full Stack & Data Engineering",
+    title: "Rohit Karumanchi — Software Engineer | Data, Backend & AI Systems",
     description: "Software Engineer specializing in Data Engineering, Full Stack Development, AI/ML. Expert in Kafka, Spark, Python, Rust, React Native.",
     siteName: "Rohit Karumanchi Portfolio",
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Rohit Karumanchi - Software Engineer",
+    title: "Rohit Karumanchi — Software Engineer",
     description: "Data Engineer & Full Stack Developer | Kafka, Spark, Python, Rust, ML",
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Rohit Karumanchi"
-  },
-  verification: {
-    google: 'google-site-verification-code-here', // You'll need to add this from Google Search Console
   },
 };
 
@@ -84,10 +88,8 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" }
-  ],
+  themeColor: "#07090F",
+  colorScheme: "dark" as const,
 };
 
 export default function RootLayout({
@@ -96,9 +98,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable} antialiased`}
       >
         {children}
       </body>
