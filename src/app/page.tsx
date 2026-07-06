@@ -545,8 +545,6 @@ export default function Home() {
             <a href={socials.email} aria-label="Email" className="text-slate-500 transition-all hover:-translate-y-0.5 hover:text-white">
               <MailIcon className="h-6 w-6" />
             </a>
-            <span className="ml-2 hidden h-px w-24 bg-slate-800 lg:block" />
-            <span className="hidden font-mono text-[10px] tracking-[0.3em] text-slate-700 lg:block">DFW · TEXAS</span>
           </div>
         </header>
 
@@ -562,7 +560,7 @@ export default function Home() {
                 <span className="h-3 w-3 rounded-full bg-[#ff5f57]/80" />
                 <span className="h-3 w-3 rounded-full bg-[#febc2e]/80" />
                 <span className="h-3 w-3 rounded-full bg-[#28c840]/80" />
-                <span className="ml-3 font-mono text-[11px] tracking-wider text-slate-500">rohit@dfw — zsh</span>
+                <span className="ml-3 font-mono text-[11px] tracking-wider text-slate-500">rohit@dev — zsh</span>
               </div>
               {/* terminal body */}
               <div className="space-y-3 p-5 font-mono text-[13px] leading-relaxed sm:p-6">
