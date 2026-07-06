@@ -196,6 +196,95 @@ h1, h2, h3, h4 {
   animation: spinSlow 24s linear infinite;
 }
 
+/* ---------- circuit-pulse backdrop ---------- */
+/* data packets traveling along the grid traces */
+
+.beam-v {
+  position: fixed;
+  top: 0;
+  width: 1px;
+  height: 34vh;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(to bottom, transparent, rgba(139, 92, 246, 0.5) 45%, rgba(196, 181, 253, 0.85) 50%, rgba(139, 92, 246, 0.5) 55%, transparent);
+  animation: beamV linear infinite;
+  will-change: transform;
+}
+
+.beam-h {
+  position: fixed;
+  left: 0;
+  height: 1px;
+  width: 30vw;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(to right, transparent, rgba(139, 92, 246, 0.45) 45%, rgba(196, 181, 253, 0.8) 50%, rgba(139, 92, 246, 0.45) 55%, transparent);
+  animation: beamH linear infinite;
+  will-change: transform;
+}
+
+.beam-cyan {
+  background: linear-gradient(to bottom, transparent, rgba(34, 211, 238, 0.4) 45%, rgba(165, 243, 252, 0.75) 50%, rgba(34, 211, 238, 0.4) 55%, transparent);
+}
+
+.beam-h.beam-cyan {
+  background: linear-gradient(to right, transparent, rgba(34, 211, 238, 0.38) 45%, rgba(165, 243, 252, 0.7) 50%, rgba(34, 211, 238, 0.38) 55%, transparent);
+}
+
+@keyframes beamV {
+  0% { transform: translateY(-40vh); }
+  100% { transform: translateY(110vh); }
+}
+
+@keyframes beamH {
+  0% { transform: translateX(-35vw); }
+  100% { transform: translateX(115vw); }
+}
+
+/* glowing nodes at circuit intersections */
+.node-dot {
+  position: fixed;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: rgba(167, 139, 250, 0.7);
+  pointer-events: none;
+  z-index: 0;
+  animation: nodeGlow ease-in-out infinite;
+}
+
+@keyframes nodeGlow {
+  0%, 100% { opacity: 0.12; box-shadow: 0 0 2px 0 rgba(167, 139, 250, 0.2); }
+  50% { opacity: 0.85; box-shadow: 0 0 10px 2px rgba(167, 139, 250, 0.35); }
+}
+
+/* slow-drifting aurora blob */
+.aurora {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  width: 55vw;
+  height: 55vw;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.16;
+  animation: auroraDrift 46s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes auroraDrift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6vw, 4vh, 0) scale(1.15); }
+  100% { transform: translate3d(-4vw, -3vh, 0) scale(0.95); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam-v, .beam-h, .node-dot, .aurora {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* legacy keyframes kept for 3D scene compat */
 @keyframes gridMove {
   0% { background-position: 0 0; }

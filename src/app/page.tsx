@@ -199,6 +199,48 @@ function Spotlight() {
   );
 }
 
+function CircuitBackdrop() {
+  // vertical "data packets" travel down grid traces (grid = 72px cells)
+  const vBeams = [
+    { left: "calc(72px * 2)", dur: "13s", delay: "0s", cyan: false },
+    { left: "calc(72px * 5)", dur: "17s", delay: "-6s", cyan: true },
+    { left: "calc(72px * 9)", dur: "11s", delay: "-3s", cyan: false },
+    { left: "calc(100vw - 72px * 3)", dur: "15s", delay: "-9s", cyan: false },
+    { left: "calc(100vw - 72px * 6)", dur: "19s", delay: "-1s", cyan: true },
+    { left: "calc(100vw - 72px * 1)", dur: "12s", delay: "-7s", cyan: false },
+  ];
+  // horizontal packets ride the cross-traces
+  const hBeams = [
+    { top: "calc(72px * 3)", dur: "21s", delay: "-4s", cyan: false },
+    { top: "calc(72px * 7)", dur: "16s", delay: "-11s", cyan: true },
+    { top: "calc(72px * 11)", dur: "24s", delay: "-2s", cyan: false },
+  ];
+  // glowing solder points on intersections
+  const nodes = [
+    { left: "calc(72px * 2 - 1px)", top: "calc(72px * 3 - 1px)", dur: "3.2s", delay: "0s" },
+    { left: "calc(72px * 5 - 1px)", top: "calc(72px * 7 - 1px)", dur: "4.1s", delay: "-1s" },
+    { left: "calc(72px * 9 - 1px)", top: "calc(72px * 3 - 1px)", dur: "3.7s", delay: "-2s" },
+    { left: "calc(100vw - 72px * 3 - 1px)", top: "calc(72px * 7 - 1px)", dur: "4.5s", delay: "-0.5s" },
+    { left: "calc(100vw - 72px * 6 - 1px)", top: "calc(72px * 11 - 1px)", dur: "3.4s", delay: "-1.6s" },
+    { left: "calc(100vw - 72px * 1 - 1px)", top: "calc(72px * 5 - 1px)", dur: "4.8s", delay: "-2.4s" },
+  ];
+  return (
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <div className="aurora" style={{ left: "-12vw", top: "-18vw", background: "radial-gradient(circle, #8b5cf6, transparent 65%)" }} />
+      <div className="aurora" style={{ right: "-15vw", bottom: "-20vw", background: "radial-gradient(circle, #22d3ee, transparent 65%)", animationDelay: "-20s" }} />
+      {vBeams.map((b, i) => (
+        <span key={`v${i}`} className={`beam-v ${b.cyan ? "beam-cyan" : ""}`} style={{ left: b.left, animationDuration: b.dur, animationDelay: b.delay }} />
+      ))}
+      {hBeams.map((b, i) => (
+        <span key={`h${i}`} className={`beam-h ${b.cyan ? "beam-cyan" : ""} hidden md:block`} style={{ top: b.top, animationDuration: b.dur, animationDelay: b.delay }} />
+      ))}
+      {nodes.map((n, i) => (
+        <span key={`n${i}`} className="node-dot hidden md:block" style={{ left: n.left, top: n.top, animationDuration: n.dur, animationDelay: n.delay }} />
+      ))}
+    </div>
+  );
+}
+
 function useReveal() {
   useEffect(() => {
     const els = document.querySelectorAll(".reveal");
@@ -434,6 +476,7 @@ export default function Home() {
 
   return (
     <main className="relative z-10 min-h-screen">
+      <CircuitBackdrop />
       <Spotlight />
 
       <div className="mx-auto max-w-6xl px-6 md:px-12 lg:flex lg:justify-between lg:gap-8 lg:px-16">
