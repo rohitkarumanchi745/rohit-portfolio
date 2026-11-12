@@ -42,6 +42,12 @@ const priorExperience = {
     "Tackled large-scale data challenges and contributed to modernizing pipelines across critical logistics workflows — sharpening the fundamentals of building reliable, scalable systems.",
 };
 
+const leadership = [
+  { label: "Mentorship", text: "Mentored engineers and helped them grow." },
+  { label: "Global teams", text: "Maintained and scaled teams across regions and time zones." },
+  { label: "International projects", text: "Handled projects internationally, with teams and stakeholders in multiple countries." },
+];
+
 const education = {
   school: "University of Texas at Dallas",
   degree: "Master's in Software Engineering",
@@ -628,6 +634,12 @@ export default function Home() {
                 workflows — where I learned that reliability is a feature users feel.
               </p>
               <p>
+                Along the way I&apos;ve <span className="text-slate-200">mentored engineers</span>,
+                maintained and <span className="text-slate-200">scaled teams globally</span>, and
+                handled <span className="text-slate-200">projects internationally</span> — the people
+                side of building systems that last.
+              </p>
+              <p>
                 I hold a Master&apos;s in Software Engineering from the{" "}
                 <span className="text-slate-200">University of Texas at Dallas</span>, and I&apos;m
                 driven to explore what&apos;s next in data engineering and AI — whether building with
@@ -676,6 +688,18 @@ export default function Home() {
               <div className="mt-6 flex flex-wrap gap-2">
                 {experience.stack.map((tech) => (
                   <span key={tech} className="chip">{tech}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="glass mt-4 p-6 sm:p-8">
+              <h3 className="text-base font-semibold text-white">Leadership</h3>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {leadership.map((l) => (
+                  <div key={l.label} className="rounded-xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-violet-400/40">
+                    <div className="font-mono text-[10px] uppercase tracking-widest text-violet-300">{l.label}</div>
+                    <p className="mt-2 text-sm leading-snug text-slate-300">{l.text}</p>
+                  </div>
                 ))}
               </div>
             </div>
