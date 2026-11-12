@@ -72,6 +72,25 @@ const projects = [
     status: "In Progress — App Store Launch Pending",
   },
   {
+    title: "Studio — Agentic Analytics Platform",
+    subtitle: "Plain-English questions become verified SQL, governed answers and D3 visuals — a crew of agents does the work, a human approves anything that writes",
+    points: [
+      "FastAPI + React platform where named agents — planners, workers and an aggregator — write SQL and run it through one governed gateway: a token-level query guard, role-based access, column masking and read-time redaction, so every answer is verified SQL and nothing model-written runs in-process.",
+      "15 connection types set up from the UI — Databricks, Snowflake, BigQuery, Postgres, Neo4j, Power BI, Cassandra, LanceDB, Jira, ServiceNow, n8n, any SQLAlchemy engine, S3 / Azure Blob / GCS through DuckDB — with encrypted credentials, one-sign-in dedupe, a discovered metadata graph, a semantic layer and KAG retrieval over documents with Harrier embeddings.",
+      "D3 engine with 29 chart types including route, point and choropleth maps, sandboxed model-written custom visuals, a gallery of every chart a result can make, cross-filtered dashboards, and answers sent to Teams and Slack.",
+      "Supervised Jobs run pipelines on Airflow, Databricks Jobs, dbt Cloud, Spark on Kubernetes and Ray Jobs behind a supervisor agent and human approval; model routing across Claude, GPT and self-hosted BitNet LoRA adapters behind a vLLM / llama.cpp gateway, with Agent Lightning rollouts feeding training; 2,200+ automated tests.",
+    ],
+    metrics: [
+      { value: "15+", label: "Data Connectors" },
+      { value: "29", label: "Chart Types" },
+      { value: "2,200+", label: "Automated Tests" },
+    ],
+    stack: ["Python", "FastAPI", "React", "D3.js", "LangGraph", "MCP", "Postgres", "Redis", "DuckDB", "Databricks", "Snowflake", "BigQuery", "Airflow", "Ray", "Kubernetes", "Docker", "Railway", "Claude / OpenAI APIs", "BitNet / vLLM"],
+    link: "https://studio-production-ac35.up.railway.app",
+    linkText: "Live App",
+    status: "Live — in active development",
+  },
+  {
     title: "Supply Chain & Inventory Analytics Platform",
     subtitle: "Event-driven inventory tracking with Kafka consumer groups, offset management, and predictive ML models",
     points: [

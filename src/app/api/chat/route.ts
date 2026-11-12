@@ -55,7 +55,21 @@ Quote: "AI-focused Software Engineer passionate about building scalable, high-im
 
 **Tech Stack**: FastAPI, GraphQL, React Native/Expo, PyTorch, CNN, OpenCV, Vector DB, Kubernetes, Docker, Rust, MCP Server, FL/RL, Airflow, Ray/Anyscale, Streamlit, Data Fusion, Postgres
 
-## 2. Real-time Retail Data Platform
+## 2. Studio — Agentic Analytics Platform (LIVE)
+**Subtitle**: Multi-agent analytics: plain-English questions → verified SQL, governed answers, D3 visuals
+**Live app**: https://studio-production-ac35.up.railway.app
+
+**Details**:
+- FastAPI + React platform; named agents (planners, workers, an aggregator) write SQL and run it through one governed gateway: token-level query guard, RBAC, column masking, read-time redaction — nothing model-written runs in-process
+- 15 connection types configured from the UI (Databricks, Snowflake, BigQuery, Postgres, Neo4j, Power BI, Cassandra, LanceDB, Jira, ServiceNow, n8n, any SQLAlchemy engine, S3/Azure Blob/GCS via DuckDB), encrypted credentials, one-sign-in dedupe, a discovered metadata graph, a semantic layer and KAG retrieval over documents with Harrier embeddings
+- D3 engine with 29 chart types including route/point/choropleth maps, sandboxed model-written custom visuals, cross-filtered dashboards, answers sent to Teams/Slack
+- Supervised Jobs: pipelines on Airflow, Databricks Jobs, dbt Cloud, Spark on Kubernetes and Ray Jobs behind a supervisor agent + human approval, on a durable leased job queue
+- Model routing across Claude, GPT and self-hosted BitNet LoRA adapters served through a vLLM / llama.cpp gateway; Agent Lightning rollouts feed training
+- 2,200+ automated tests (pytest, node:test, Playwright in real Chrome); deployed on Railway from a Dockerfile with Postgres + Redis
+
+**Tech Stack**: Python, FastAPI, React, D3.js, LangGraph, MCP, Postgres, Redis, DuckDB, Databricks, Snowflake, BigQuery, Airflow, Ray, Kubernetes, Docker, Railway, Claude/OpenAI APIs, BitNet/vLLM
+
+## 3. Real-time Retail Data Platform
 **Subtitle**: Kafka → Spark/Databricks → Snowflake, with SLAs + Observability
 
 **Details**:
@@ -65,7 +79,7 @@ Quote: "AI-focused Software Engineer passionate about building scalable, high-im
 
 **Tech Stack**: Kafka, Spark/Databricks, Snowflake, Airflow, Azure/AWS
 
-## 3. Supply Chain & Inventory Analytics Platform
+## 4. Supply Chain & Inventory Analytics Platform
 **Subtitle**: Real-time shipping, inventory optimization, and SLA monitoring at scale
 
 **Details**:
@@ -123,9 +137,14 @@ function getSmartResponse(message: string): string {
     return "Nava is Rohit's flagship full-stack dating app with ML! It's a production-grade mobile app built with:\n• Backend: FastAPI + GraphQL APIs, Rust MCP server for real-time matchmaking\n• Mobile: React Native/Expo with smooth UX\n• ML/CV: PyTorch CNN models + OpenCV for real-time selfie verification and face authentication on-device\n• Privacy: Federated Learning & Reinforcement Learning for privacy-preserving recommendations\n• Data: Vector DB for semantic profile matching, Streamlit analytics dashboard, Data Fusion pipelines\n• Infra: Deployed on Kubernetes with Docker, Airflow + Ray/Anyscale for distributed ML training\n• Auth: JWT/OTP authentication with production-grade error handling\n\nCheck out the repo on his GitHub!";
   }
 
+  // Studio project
+  if (lowerMsg.includes("studio") || lowerMsg.includes("agentic") || lowerMsg.includes("analytics platform")) {
+    return "Studio is Rohit's agentic analytics platform — live at https://studio-production-ac35.up.railway.app:\n• Agents: a crew of named agents (planners, workers, an aggregator) turns plain-English questions into verified SQL, run through one governed gateway (query guard, RBAC, masking, redaction)\n• Data: 15 connection types set up from the UI — Databricks, Snowflake, BigQuery, Postgres, Neo4j, Power BI, S3/Azure/GCS via DuckDB and more — plus a discovered metadata graph, a semantic layer and KAG retrieval with Harrier embeddings\n• Visuals: a D3 engine with 29 chart types including maps, sandboxed custom visuals and cross-filtered dashboards\n• Jobs: pipelines on Airflow, Databricks, dbt Cloud, Spark on Kubernetes and Ray Jobs behind a supervisor agent and human approval\n• Models: routing across Claude, GPT and self-hosted BitNet LoRA adapters; 2,200+ automated tests\n\nBuilt with Python/FastAPI, React, D3 and LangGraph, deployed on Railway.";
+  }
+
   // Projects overview
   if (lowerMsg.includes("project")) {
-    return "Rohit has built impressive projects showcasing end-to-end skills:\n\n1️⃣ Nava (Full Stack Dating App with ML) - FastAPI, GraphQL, React Native, PyTorch, CNN, OpenCV, Federated Learning, Kubernetes. Real-time selfie verification and privacy-preserving recommendations!\n\n2️⃣ Real-time Retail Data Platform - Kafka→Spark/Databricks→Snowflake pipeline powering order/shipment/fraud analytics with SLAs and observability.\n\n3️⃣ Supply Chain & Inventory Analytics Platform - Real-time shipping tracking, SLA monitoring, inventory optimization, and delivery predictions at scale.\n\nWhich project would you like to know more about?";
+    return "Rohit has built impressive projects showcasing end-to-end skills:\n\n1️⃣ Nava (Full Stack Dating App with ML) - FastAPI, GraphQL, React Native, PyTorch, CNN, OpenCV, Federated Learning, Kubernetes. Real-time selfie verification and privacy-preserving recommendations!\n\n2️⃣ Studio (Agentic Analytics Platform, live) - FastAPI + React, a crew of agents writing verified SQL through a governed gateway, 15 data connectors, a D3 engine with 29 chart types, pipelines on Airflow/Databricks/dbt/Spark/Ray behind human approval, model routing across Claude, GPT and self-hosted BitNet.\n\n3️⃣ Real-time Retail Data Platform - Kafka→Spark/Databricks→Snowflake pipeline powering order/shipment/fraud analytics with SLAs and observability.\n\n4️⃣ Supply Chain & Inventory Analytics Platform - Real-time shipping tracking, SLA monitoring, inventory optimization, and delivery predictions at scale.\n\nWhich project would you like to know more about?";
   }
 
   // Experience
@@ -154,7 +173,7 @@ function getSmartResponse(message: string): string {
   }
 
   // Default
-  return "Rohit Karumanchi is a Software Engineer (Full Stack + Data) currently at Neiman Marcus Group. I can help you learn more about his experience in data engineering, ML, and full-stack development. Try asking about:\n• His core strengths and expertise\n• The Nava dating app project\n• His work at Neiman Marcus\n• His education and background\n• Specific technologies (Kafka, Spark, React Native, PyTorch, etc.)\n• How to contact him";
+  return "Rohit Karumanchi is a Software Engineer (Full Stack + Data) currently at Neiman Marcus Group. I can help you learn more about his experience in data engineering, ML, and full-stack development. Try asking about:\n• His core strengths and expertise\n• The Nava dating app project\n• Studio, his agentic analytics platform\n• His work at Neiman Marcus\n• His education and background\n• Specific technologies (Kafka, Spark, React Native, PyTorch, etc.)\n• How to contact him";
 }
 
 export async function POST(req: Request) {
