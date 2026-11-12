@@ -26,7 +26,7 @@ const monoFont = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://rohitkarumanchi.com'),
   title: "Rohit Karumanchi — Software Engineer | Data, Backend & AI Systems",
-  description: "Rohit Karumanchi - Software Engineer specializing in Data Engineering, Full Stack Development, AI/ML, and Cloud Infrastructure. Expert in Kafka, Spark, Databricks, Python, Rust, React Native, and PyTorch. Mentored engineers, scaled teams globally, and handled projects internationally. MS from UT Dallas. Currently at Neiman Marcus Group.",
+  description: "Rohit Karumanchi - Software Engineer specializing in Data Engineering, Full Stack Development, AI/ML, and Cloud Infrastructure. Expert in Kafka, Spark, Databricks, Python, Rust, React Native, and PyTorch. Leads two teams with 18 engineers; sustained 99.99% availability across 100+ services at global scale; mentored engineers and handled projects internationally. MS from UT Dallas. Currently at Neiman Marcus Group.",
   keywords: [
     "Rohit Karumanchi",
     "Software Engineer",

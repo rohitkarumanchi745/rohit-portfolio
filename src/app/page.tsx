@@ -42,11 +42,19 @@ const priorExperience = {
     "Tackled large-scale data challenges and contributed to modernizing pipelines across critical logistics workflows — sharpening the fundamentals of building reliable, scalable systems.",
 };
 
-const leadership = [
-  { label: "Mentorship", text: "Mentored engineers and helped them grow." },
-  { label: "Global teams", text: "Maintained and scaled teams across regions and time zones." },
-  { label: "International projects", text: "Handled projects internationally, with teams and stakeholders in multiple countries." },
-];
+const leadership = {
+  metrics: [
+    { value: "99.99%", label: "Availability", detail: "Sustained across 100+ services at global scale" },
+    { value: "18", label: "Engineers Led", detail: "Two teams across distributed systems and development" },
+    { value: "100%", label: "Retention", detail: "Over 2 years" },
+  ],
+  points: [
+    { title: "Systems at global scale", text: "Guided architecture and development teams on building highly available, performant applications at global scale, and made sure operability, measurability, and manageability shipped with every feature. Sustained 99.99% availability across 100+ services." },
+    { title: "Teams that perform", text: "Lead two teams with 18 engineers across distributed systems and development in the AI Experience organization, with 100% retention over 2 years." },
+    { title: "Mentorship", text: "Mentored engineers and helped them grow." },
+    { title: "International projects", text: "Handled projects internationally, with teams and stakeholders in multiple countries." },
+  ],
+};
 
 const education = {
   school: "University of Texas at Dallas",
@@ -634,10 +642,13 @@ export default function Home() {
                 workflows — where I learned that reliability is a feature users feel.
               </p>
               <p>
-                Along the way I&apos;ve <span className="text-slate-200">mentored engineers</span>,
-                maintained and <span className="text-slate-200">scaled teams globally</span>, and
-                handled <span className="text-slate-200">projects internationally</span> — the people
-                side of building systems that last.
+                Along the way I&apos;ve{" "}
+                <span className="text-slate-200">maintained, scaled and managed systems globally</span>{" "}
+                — 99.99% availability across 100+ services — and today I lead{" "}
+                <span className="text-slate-200">two teams with 18 engineers</span>, with 100% retention
+                over two years. I&apos;ve <span className="text-slate-200">mentored engineers</span> and
+                handled <span className="text-slate-200">projects internationally</span>: the people side
+                of building systems that last.
               </p>
               <p>
                 I hold a Master&apos;s in Software Engineering from the{" "}
@@ -695,13 +706,24 @@ export default function Home() {
             <div className="glass mt-4 p-6 sm:p-8">
               <h3 className="text-base font-semibold text-white">Leadership</h3>
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {leadership.map((l) => (
-                  <div key={l.label} className="rounded-xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-violet-400/40">
-                    <div className="font-mono text-[10px] uppercase tracking-widest text-violet-300">{l.label}</div>
-                    <p className="mt-2 text-sm leading-snug text-slate-300">{l.text}</p>
+                {leadership.metrics.map((m) => (
+                  <div key={m.label} className="group rounded-xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-violet-400/40">
+                    <div className="font-mono text-2xl font-bold text-violet-300">{m.value}</div>
+                    <div className="mt-1 text-xs font-medium text-slate-300">{m.label}</div>
+                    <div className="mt-2 text-[11px] leading-snug text-slate-500">{m.detail}</div>
                   </div>
                 ))}
               </div>
+              <ul className="mt-6 space-y-2.5">
+                {leadership.points.map((point) => (
+                  <li key={point.title} className="flex gap-3 text-sm leading-relaxed text-slate-400">
+                    <span className="mt-1 text-violet-400">▹</span>
+                    <span>
+                      <span className="font-medium text-slate-200">{point.title}.</span> {point.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
